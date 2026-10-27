@@ -85,15 +85,19 @@ const SELFTEST_SCRIPT = `(async () => {
 function waitReady(w, timeoutMs) {
   const started = Date.now();
   return new Promise(function (resolve) {
-    (function tick() {
+    function later() {
+      if (Date.now() - started > timeoutMs) return resolve(false);
+      setTimeout(tick, 150);
+    }
+    function tick() {
+      /* executeJavaScript до готовности документа кидает ошибку — это повод
+         подождать ещё, а не сдаваться: иначе кадр снимается на пустом экране. */
+      if (w.webContents.isLoading()) return later();
       w.webContents.executeJavaScript("document.documentElement.dataset.ready === '1'")
-        .then(function (ok) {
-          if (ok) return resolve(true);
-          if (Date.now() - started > timeoutMs) return resolve(false);
-          setTimeout(tick, 120);
-        })
-        .catch(function () { resolve(false); });
-    })();
+        .then(function (ok) { if (ok) resolve(true); else later(); })
+        .catch(later);
+    }
+    tick();
   });
 }
 

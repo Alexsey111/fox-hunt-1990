@@ -652,6 +652,10 @@
   add('win.note.best.authors', ' Это не хуже рекорда авторов (19 ходов).',
     ' That is no worse than the authors’ record (19 moves).');
 
+  add('foot.author', 'Воссоздал и дополнил: Алексей', 'Rebuilt and extended by Alexey');
+  add('foot.repo', 'Код и веб-версия на GitHub', 'Source code and web version on GitHub');
+  add('foot.repo.title', 'Открыть репозиторий на GitHub', 'Open the repository on GitHub');
+
   function set(l) {
     lang = DICT[l] ? l : 'ru';
     return lang;

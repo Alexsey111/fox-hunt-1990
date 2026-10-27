@@ -827,6 +827,30 @@ html[data-theme="retro"] .duel-line { border-radius: 0; color: var(--gold); }
 
 .foot-dim { color: #4a5158; }
 
+.foot-link {
+  color: var(--dim);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color .15s ease, border-color .15s ease;
+}
+
+.foot-link:hover,
+.foot-link:focus-visible {
+  color: var(--accent, #f28a2e);
+  border-bottom-color: currentColor;
+}
+
+html[data-theme="retro"] .foot-link {
+  color: #7f8a6a;
+  border-bottom-style: dashed;
+  border-bottom-color: #3f4633;
+}
+
+html[data-theme="retro"] .foot-link:hover {
+  color: #d7e07a;
+  border-bottom-color: currentColor;
+}
+
 /* ---------- модальные окна ---------- */
 
 .modal {

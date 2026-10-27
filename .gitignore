@@ -1,6 +1,7 @@
 # зависимости и сборка
 node_modules/
 dist-desktop/
+build-out*/
 
 # временные файлы проверок
 desktop/smoke.png
