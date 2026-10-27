@@ -1,0 +1,7 @@
+# зависимости и сборка
+node_modules/
+dist-desktop/
+
+# временные файлы проверок
+desktop/smoke.png
+desktop/smoke-*.png

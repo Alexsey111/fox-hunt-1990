@@ -1,0 +1,66 @@
+{
+  "name": "fox-hunt-1990",
+  "version": "1.0.1",
+  "private": true,
+  "description": "Охота на лис — игра из «Науки и жизни» № 10, 1990, в современной оболочке",
+  "scripts": {
+    "test": "node --test tests/engine.test.js tests/solver.test.js tests/chase.test.js",
+    "start": "electron .",
+    "desktop": "electron .",
+    "smoke": "electron . --smoke",
+    "dist": "electron-builder --win nsis portable",
+    "dist:dir": "electron-builder --win dir"
+  },
+  "devDependencies": {
+    "electron": "^33.4.11",
+    "electron-builder": "^25.1.8"
+  },
+  "main": "desktop/main.js",
+  "author": "Alexey (Alexsey111)",
+  "license": "MIT",
+  "build": {
+    "appId": "ru.foxhunt.game1990",
+    "productName": "Охота на лис",
+    "copyright": "Логика 1990 года — Ю. Иванов, П. Иртюга; оболочка 2026",
+    "directories": {
+      "output": "dist-desktop",
+      "buildResources": "desktop"
+    },
+    "files": [
+      "index.html",
+      "assets/**/*",
+      "desktop/main.js",
+      "desktop/icon.png",
+      "package.json"
+    ],
+    "win": {
+      "icon": "desktop/icon.png",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "Охота на лис",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "artifactName": "oxota-na-lis-setup-${version}.exe"
+    },
+    "portable": {
+      "artifactName": "oxota-na-lis-${version}-portable.exe"
+    }
+  }
+}

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="modern">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; object-src 'none'; base-uri 'none'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Охота на лис — логическая игра Ю. Иванова и П. Иртюги из «Науки и жизни» № 10 за 1990 год. Поле 10×10, восемь лис, классическая пеленгация.">
+<title>Охота на лис — 1990 / 2026</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M3.2 2.4 9.4 6.1h5.2l6.2-3.7-.6 12.2L12 22 3.8 14.6Z' fill='%23ff7a3d'/></svg>">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<div class="app">
+
+  <header class="top">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3.2 2.4 9.4 6.1h5.2l6.2-3.7-.6 12.2L12 22 3.8 14.6Z" fill="currentColor"/>
+        <path d="M12 9.6 7.6 15.4 12 19.4l4.4-4z" fill="#1b0e05" opacity=".55"/>
+        <circle cx="8.7" cy="10.4" r="1" fill="#1b0e05"/>
+        <circle cx="15.3" cy="10.4" r="1" fill="#1b0e05"/>
+      </svg>
+      <div class="brand-text">
+        <h1 data-i18n="hdr.title">Охота на лис</h1>
+        <p class="sub" data-i18n="hdr.sub">«Наука и жизнь» № 10, 1990 · Ю. Иванов, П. Иртюга · Ленинград</p>
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <div class="seg" role="group" data-i18n-aria="aria.theme" aria-label="Оформление">
+        <button type="button" class="seg-btn is-on" data-theme="modern">2026</button>
+        <button type="button" class="seg-btn" data-theme="retro">1990</button>
+      </div>
+      <button type="button" class="btn ghost" id="btn-lang" data-i18n="btn.lang" data-i18n-title="btn.lang.title" title="Переключить на английский">EN</button>
+      <button type="button" class="btn ghost" id="btn-sound" aria-pressed="false">
+        <span data-i18n="btn.sound">Звук</span> <span class="sound-dot" aria-hidden="true"></span>
+      </button>
+      <button type="button" class="btn ghost" id="btn-rules" data-i18n="btn.rules">Правила</button>
+    </div>
+  </header>
+
+  <div class="variants" id="variant-bar" role="tablist" data-i18n-aria="aria.variant" aria-label="Вариант игры">
+    <button type="button" class="variant-btn" data-variant="classic" role="tab" aria-selected="true" data-i18n="var.classic">Классика 1990</button>
+    <button type="button" class="variant-btn" data-variant="chase" role="tab" aria-selected="false" data-i18n="var.chase">Гон</button>
+    <button type="button" class="variant-btn" data-variant="mk61" role="tab" aria-selected="false" data-i18n="var.mk61">МК-61</button>
+  </div>
+
+  <div class="levels" id="level-bar" role="group" data-i18n-aria="aria.level" aria-label="Уровень сложности"></div>
+
+  <div class="chase-bar" id="chase-bar" role="group" data-i18n-aria="aria.chase" aria-label="Настройки гона" hidden>
+    <label class="chase-item"><span data-i18n="chase.field">Поле</span>
+      <select id="chase-size">
+        <option value="8">8 × 8</option>
+        <option value="10" selected>10 × 10</option>
+        <option value="12">12 × 12</option>
+      </select>
+    </label>
+    <label class="chase-item"><span data-i18n="chase.foxes">Лис</span>
+      <select id="chase-foxes">
+        <option value="4">4</option>
+        <option value="6">6</option>
+        <option value="8" selected>8</option>
+        <option value="10">10</option>
+      </select>
+    </label>
+    <label class="chase-item"><span data-i18n="chase.every">Перебежка</span>
+      <select id="chase-every">
+        <option value="0" data-i18n="chase.every.0">никогда</option>
+        <option value="5" selected data-i18n="chase.every.5">через 5 ходов</option>
+        <option value="4" data-i18n="chase.every.4">через 4 хода</option>
+        <option value="3" data-i18n="chase.every.3">через 3 хода</option>
+        <option value="2" data-i18n="chase.every.2">через 2 хода</option>
+        <option value="1" data-i18n="chase.every.1">каждый ход</option>
+      </select>
+    </label>
+    <label class="chase-item"><span data-i18n="chase.count">Сколько лис</span>
+      <select id="chase-count" data-i18n-title="chase.count.title" title="сколько лис сдвигается за одну перебежку">
+        <option value="1" selected data-i18n="chase.count.one">1 лиса</option>
+        <option value="all" data-i18n="chase.count.all">все</option>
+      </select>
+    </label>
+  </div>
+
+  <main class="layout">
+
+    <section class="board-wrap" data-i18n-aria="aria.board" aria-label="Игровое поле">
+      <div class="board" id="board"></div>
+      <div class="blind-screen" id="blind-screen">
+        <b data-i18n="blind.title">ПОЛЯ НЕТ</b>
+        <span data-i18n-html="blind.text">Как на МК-61: только индикатор, журнал и ввод координат.<br>
+          Лучи придётся держать в голове — подсказок здесь не будет.</span>
+      </div>
+
+      <div class="calc" id="calc" hidden>
+        <div class="calc-shell">
+          <div class="calc-brand">
+            <span data-i18n="calc.brand">ЭЛЕКТРОНИКА МК-61</span>
+            <span class="calc-lamp" id="calc-lamp">НАЙДЕНО 0/8</span>
+          </div>
+          <div class="calc-screen" id="calc-screen">
+            <div class="calc-line"><span class="calc-tag" data-i18n="calc.tag.input">ВВОД</span><b class="calc-digits" id="calc-digits">—</b></div>
+            <div class="calc-line"><span class="calc-tag" data-i18n="calc.tag.bearing">ПЕЛЕНГ</span><b class="calc-answer" id="calc-answer">—</b></div>
+            <div class="calc-note" id="calc-note" data-i18n="calc.note">строка . столбец · С/П — заход</div>
+          </div>
+          <div class="calc-keys" id="calc-keys">
+            <button type="button" data-key="7">7</button>
+            <button type="button" data-key="8">8</button>
+            <button type="button" data-key="9">9</button>
+            <button type="button" data-key="c" class="calc-fn" data-i18n="calc.key.c">С</button>
+            <button type="button" data-key="4">4</button>
+            <button type="button" data-key="5">5</button>
+            <button type="button" data-key="6">6</button>
+            <button type="button" data-key="." class="calc-fn">.</button>
+            <button type="button" data-key="1">1</button>
+            <button type="button" data-key="2">2</button>
+            <button type="button" data-key="3">3</button>
+            <button type="button" data-key="0">0</button>
+            <button type="button" data-key="sp" class="calc-run" data-i18n="calc.key.sp">С/П</button>
+          </div>
+        </div>
+        <p class="calc-hint" data-i18n="calc.hint">Клавиатура тоже работает: цифры и «.», Enter — заход, Backspace — стереть.
+          Поля нет намеренно: лучи держите в голове, как на настоящем калькуляторе.</p>
+      </div>
+      <p class="board-hint" id="board-hint"><span data-i18n="board.hint">Строка ↓, столбец →. Клик по клетке — пеленг из неё, это один ход.</span>
+        <span class="hint-extra" data-i18n="board.hint.extra">Правый клик — своя пометка.</span>
+      </p>
+    </section>
+
+    <aside class="panel">
+
+      <div class="lcd" id="lcd" aria-live="polite">
+        <div class="lcd-label" data-i18n="lcd.bearing">ПЕЛЕНГ</div>
+        <div class="lcd-value" id="lcd-value">—</div>
+        <div class="lcd-note" id="lcd-note" data-i18n="lcd.hint">введите координаты вида 4.3</div>
+      </div>
+
+      <div class="stats">
+        <div><span class="k" data-i18n="stat.found">Найдено</span><span class="v"><b id="stat-found">0</b><span class="slash" id="stat-total">/8</span></span></div>
+        <div><span class="k" data-i18n="stat.moves">Ходы</span><span class="v" id="stat-moves">0</span></div>
+        <div><span class="k" data-i18n="stat.time">Время</span><span class="v" id="stat-time">0:00</span></div>
+        <div><span class="k" data-i18n="stat.seed">Партия</span><span class="v mono" id="stat-seed">—</span></div>
+      </div>
+
+      <p class="duel-line" id="duel-line" hidden></p>
+
+      <form class="coord" id="coord-form" autocomplete="off" novalidate>
+        <label for="coord-input"><span data-i18n="coord.label">Координаты</span> <span data-i18n="coord.label.hint">строка . столбец</span></label>
+        <div class="coord-row">
+          <input id="coord-input" name="coord" inputmode="decimal" placeholder="4.3"
+                 maxlength="6" spellcheck="false" data-i18n-aria="coord.aria" aria-label="Координаты: строка, точка, столбец">
+          <button type="submit" class="btn primary"><span data-i18n="btn.probe">Пеленг</span><span class="btn-key">С/П</span></button>
+        </div>
+      </form>
+
+      <div class="tools" id="tools">
+        <label class="check"><input type="checkbox" id="opt-lines" checked><span data-i18n="opt.lines">Подсветка лучей</span></label>
+        <label class="check"><input type="checkbox" id="opt-notes" checked><span data-i18n="opt.notes">Заметки</span></label>
+        <label class="check" data-i18n-title="opt.auto.title" title="«×» там, где лисы не может быть по логике пеленгов">
+          <input type="checkbox" id="opt-auto"><span data-i18n="opt.auto">Автопометки</span></label>
+      </div>
+      <p class="legend" id="notes-legend" data-i18n="legend.notes">Правый клик (или долгое нажатие): «?» — здесь может быть лиса, второй раз — «×» — здесь точно нет. Автопометки ставят «×» только там, где лисы не может быть по логике пеленгов.</p>
+
+      <p class="hint-line" id="hint-line" aria-live="polite"></p>
+
+      <div class="actions">
+        <button type="button" class="btn ghost" id="btn-hint"><span data-i18n="btn.hint">Подсказка</span><span class="btn-key">H</span></button>
+        <button type="button" class="btn ghost" id="btn-review" data-i18n="btn.review">Разбор</button>
+        <button type="button" class="btn ghost" id="btn-print" data-i18n="btn.print">Печать</button>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn ghost" id="btn-new" data-i18n="btn.new">Новая партия</button>
+        <button type="button" class="btn ghost" id="btn-undo" data-i18n="btn.undo" data-i18n-title="btn.undo.title" title="Отменить последний заход (Ctrl+Z)">Отменить</button>
+        <button type="button" class="btn ghost" id="btn-replay" data-i18n="btn.replay">Повторить</button>
+        <button type="button" class="btn ghost" id="btn-share" data-i18n="btn.share">Поделиться</button>
+        <button type="button" class="btn ghost" id="btn-train" data-i18n="btn.train">Тренировка</button>
+        <button type="button" class="btn ghost danger" id="btn-giveup" data-i18n="btn.giveup">Сдаться</button>
+      </div>
+
+      <div class="log-block">
+        <div class="log-head"><span data-i18n="log.title">Журнал ходов</span><span class="mono" id="log-count">0</span></div>
+        <ol class="log" id="log" data-i18n-aria="aria.log" aria-label="Журнал ходов"></ol>
+      </div>
+
+      <p class="panel-note"><span data-i18n="panel.rec">Рекорд уровня —</span> <b id="rec-moves">—</b> <span data-i18n="panel.par">· пар —</span> <b id="rec-par">—</b></p>
+      <p class="panel-note" id="stat-line">Партий: 0 · побед: 0</p>
+      <button type="button" class="btn ghost wide" id="btn-daily" data-i18n="btn.daily">Задача дня</button>
+      <p class="panel-note" id="daily-line"></p>
+      <button type="button" class="btn ghost wide" id="btn-daily-hist" data-i18n="btn.dailyHist">История задач дня</button>
+      <button type="button" class="btn ghost wide" id="btn-stats" data-i18n="btn.stats">Итоги: рекорды и статистика</button>
+    </aside>
+  </main>
+
+  <footer class="foot">
+    <span id="foot-level" data-i18n="foot.level">Поле 10 × 10 · восемь лис</span>
+    <span data-i18n="foot.bearing">Пеленг: строка, столбец и две диагонали</span>
+    <span class="foot-dim" data-i18n="foot.dim">Логика 1990 года, оболочка 2026-го</span>
+  </footer>
+</div>
+
+<div class="modal" id="rules-modal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="rules-title">
+    <button type="button" class="x" data-close data-i18n-aria="aria.close" aria-label="Закрыть">×</button>
+    <p class="eyebrow" data-i18n="rules.eyebrow">«Наука и жизнь» № 10 · октябрь 1990</p>
+    <h2 id="rules-title" data-i18n="rules.title">Охота на лис</h2>
+    <p class="lead" data-i18n="rules.lead">Логическая игра Ю. Иванова и П. Иртюги для программируемого микрокалькулятора «Электроника МК-61». Поле 10 × 10, восемь лис.</p>
+
+    <blockquote data-i18n="rules.quote">«Вам неизвестно, где точно сидит лиса, но Вам архиважно поймать всех зверюшек за минимальное число ходов. В качестве оружия у Вас имеется радиопеленгатор, реагирующий на рыжих бестий».</blockquote>
+
+    <h3 data-i18n="rules.h.rules">Правила</h3>
+    <ol class="rules-list">
+      <li data-i18n="rules.r1">Восемь лис прячутся на поле 10 × 10. Несколько лис могут сидеть в одной клетке.</li>
+      <li data-i18n-html="rules.r2">Вы называете клетку парой чисел «строка.столбец», например <code>4.3</code>. Каждый заход — один ход.</li>
+      <li data-i18n-html="rules.r3">Если в названной клетке есть лиса, ловится ровно одна: индикатор показывает <b>ЛИС·N</b>, где N — сколько лис ещё не поймано. Если в клетке сидели две, вторая ловится следующим заходом.</li>
+      <li data-i18n="rules.r4">Если лис в клетке нет, пеленгатор показывает, сколько не пойманных лис лежит на четырёх лучах из неё: строка, столбец и обе диагонали. Клетка считается один раз, даже если лежит сразу на нескольких лучах.</li>
+      <li data-i18n="rules.r5">Пойманные лисы из пеленга исчезают. Цель — поймать все восемь за минимальное число ходов.</li>
+    </ol>
+    <p class="small" data-i18n-html="rules.example">Пример из журнала: при расстановке, где по две лисы в 2.1 и 4.6, заход <code>4.3</code> даёт пеленг 4. Затем <code>4.6</code> — «ЛИС·7», ещё раз <code>4.6</code> — «ЛИС·6», и третий раз — пеленг 2.</p>
+
+    <h3 data-i18n="rules.h.levels">Уровни и пеленг</h3>
+    <ul class="rules-list">
+      <li data-i18n-html="rules.l1"><b>Новичок</b> (8 × 8, 4 лисы) — пеленг приходит четырьмя числами: строка, столбец и две диагонали по отдельности.</li>
+      <li data-i18n-html="rules.l2"><b>Разведчик</b> (10 × 10) — только строка и столбец, диагонали не слышны.</li>
+      <li data-i18n-html="rules.l3"><b>Охотник</b> (10 × 10) — классика 1990 года: одно число, сумма по четырём лучам.</li>
+      <li data-i18n-html="rules.l4"><b>Ветеран</b> (12 × 12, 10 лис) — лучи подсвечиваются только после хода, заметок нет.</li>
+      <li data-i18n-html="rules.l5"><b>Слепой</b> — поля нет вовсе: индикатор, журнал и ввод координат, как на МК-61.</li>
+      <li data-i18n-html="rules.l6"><b>Экстрим</b> (8 × 8, 4 лисы) — радар отвечает «есть лиса на лучах» или «чисто», без количества.</li>
+    </ul>
+
+    <h3 data-i18n="rules.h.added">Что добавлено в этой версии</h3>
+    <ul class="rules-list">
+      <li data-i18n="rules.a1">Уровни, звёзды и пар: три звезды — от порога, посчитанного перебором партий эталонной политики (600 партий на уровень); там, где нет заметок или поля, поправка +2 хода.</li>
+      <li data-i18n="rules.a2">Рекорды, статистика партий и сдач — отдельно по каждому уровню. Кнопка «Итоги» собирает всё в одну таблицу и выгружает в .csv или .json.</li>
+      <li data-i18n="rules.a3">Задача дня: одна расстановка на всех, выведенная из даты. История задач дня — сыгранные дни и серия подряд; прошлый день можно переиграть (это не идёт в рекорды).</li>
+      <li data-i18n="rules.a4">Отмена хода: кнопка «Отменить» или Ctrl+Z. Незаконченная партия продолжается после закрытия вкладки.</li>
+      <li data-i18n="rules.a5">Заметки двух видов: «?» — может быть, «×» — точно нет. Автопометки ставят «×» по логике пеленгов.</li>
+      <li data-i18n="rules.a6">Подсказка и разбор партии: подсказка показывает клетку с наибольшей ожидаемой информацией, разбор — сколько бит принёс каждый ход.</li>
+      <li data-i18n="rules.a7">Печатный бланк поля с ключом для ведущего и тренировка с уже запеленгованной позиции.</li>
+      <li data-i18n="rules.a8">Журнал ходов, таймер, номер партии и тема «1990» с зелёным индикатором.</li>
+      <li data-i18n="rules.a9">Английская версия интерфейса: кнопка EN/RU в шапке. Русский — по умолчанию,
+        выбор запоминается, незаконченная партия при переключении не теряется.</li>
+    </ul>
+
+    <h3 data-i18n="rules.h.chase">Вариант «Гон»</h3>
+    <ul class="rules-list">
+      <li data-i18n="rules.c1">Отдельный вариант рядом с классикой: поле 8 × 8, 10 × 10 или 12 × 12, лис от 4 до 10 — на выбор.</li>
+      <li data-i18n="rules.c2">Пока не наступил срок перебежки, лисы стоят на месте: первые ходы ничем не отличаются от классики.</li>
+      <li data-i18n="rules.c3">Перебежка — сдвиг на одну соседнюю клетку (по горизонтали, вертикали или диагонали). Настраивается: никогда, через 5, 4, 3, 2 хода или каждый ход. За одну перебежку сдвигается любое выбранное число лис — от одной до всего состава.</li>
+      <li data-i18n="rules.c4">Видно, откуда ушла лиса, но не куда: она где-то рядом — источник на один ход подсвечивается штриховкой. Числа на поле после перебежки тускнеют — они про прежнюю расстановку.</li>
+      <li data-i18n="rules.c5">Лиса не встаёт в клетку, куда вы только что смотрели: перебежка не награждает за слепой тык.</li>
+      <li data-i18n="rules.c6">Звёзд в гоне нет: пороги посчитаны для неподвижных лис. Рекорд и статистика ведутся отдельно для каждой настройки.</li>
+    </ul>
+
+    <h3 data-i18n="rules.h.mk61">Вариант «МК-61»</h3>
+    <ul class="rules-list">
+      <li data-i18n="rules.m1">Поля нет вовсе: только зелёный индикатор и клавиши, как на «Электронике МК-61».</li>
+      <li data-i18n="rules.m2">Правила классики 1990 года: 10 × 10, восемь лис, пеленг — лисы на строке, столбце и двух диагоналях.</li>
+      <li data-i18n="rules.m3">Ввод: цифры, точка, «С» — стереть, «С/П» — заход. С клавиатуры: цифры и «.», Enter — заход, Backspace — стереть, C — очистить.</li>
+      <li data-i18n="rules.m4">Подсказок, заметок и подсветки лучей здесь нет: лучи и числа держите в голове. Звёзд тоже нет, рекорд — отдельный.</li>
+    </ul>
+
+    <p class="small muted" data-i18n="rules.tiny">В оригинале поля на экране не было вовсе: МК-61 показывал только числа, а координаты вводились через точку. Расстановка, поимка по одной лисе и правило четырёх лучей оставлены без изменений — современная только оболочка.</p>
+
+    <div class="sheet-actions">
+      <button type="button" class="btn primary" data-close data-i18n="btn.got">Понятно</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="win-modal" hidden>
+  <div class="sheet win" role="dialog" aria-modal="true" aria-labelledby="win-title">
+    <button type="button" class="x" data-close aria-label="Закрыть">×</button>
+    <svg class="win-fox" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M3.2 2.4 9.4 6.1h5.2l6.2-3.7-.6 12.2L12 22 3.8 14.6Z" fill="currentColor"/>
+      <path d="M12 9.6 7.6 15.4 12 19.4l4.4-4z" fill="#1b0e05" opacity=".5"/>
+      <circle cx="8.7" cy="10.4" r="1" fill="#1b0e05"/>
+      <circle cx="15.3" cy="10.4" r="1" fill="#1b0e05"/>
+    </svg>
+    <p class="eyebrow" data-i18n="win.eyebrow">Партия окончена</p>
+    <h2 id="win-title" data-i18n="win.title">Все лисы найдены</h2>
+    <div class="stars" id="win-stars" data-i18n-aria="aria.stars" aria-label="Оценка партии"></div>
+    <div class="win-stats">
+      <div><span data-i18n="stat.moves">Ходы</span><b id="win-moves">—</b></div>
+      <div><span data-i18n="stat.time">Время</span><b id="win-time">—</b></div>
+      <div><span data-i18n="win.record">Рекорд</span><b id="win-record">—</b></div>
+    </div>
+    <p class="win-note" id="win-note"></p>
+    <div class="sheet-actions">
+      <button type="button" class="btn primary" id="btn-again" data-i18n="btn.again">Ещё партия</button>
+      <button type="button" class="btn ghost" id="btn-same" data-i18n="btn.same">Повторить эту</button>
+      <button type="button" class="btn ghost" id="btn-win-review" data-i18n="btn.review">Разбор</button>
+      <button type="button" class="btn ghost" data-close id="btn-win-look" data-i18n="btn.winLook">Посмотреть поле</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="review-modal" hidden>
+  <div class="sheet wide-sheet" role="dialog" aria-modal="true" aria-labelledby="review-title">
+    <button type="button" class="x" data-close aria-label="Закрыть">×</button>
+    <p class="eyebrow" data-i18n="review.eyebrow">Разбор партии</p>
+    <h2 id="review-title" data-i18n="review.title">Что дал каждый ход</h2>
+    <p class="lead" id="review-summary"></p>
+
+    <div class="review-lesson">
+      <div class="mini-board" id="review-board" role="img" data-i18n-aria="aria.reviewBoard" aria-label="Какие клетки исключил выбранный ход"></div>
+      <div class="review-explain">
+        <p class="review-move" id="review-move" data-i18n="review.none">Ход не выбран</p>
+        <p class="review-why" id="review-why" data-i18n="review.hint">Нажмите строку в таблице — поле покажет, какие клетки этот пеленг вычеркнул и почему.</p>
+        <p class="review-legend small muted">
+          <span class="lg lg-excluded"></span> <span data-i18n="review.lg.excluded">вычеркнуто этим ходом</span> ·
+          <span class="lg lg-gone"></span> <span data-i18n="review.lg.gone">было вычеркнуто раньше</span> ·
+          <span class="lg lg-open"></span> <span data-i18n="review.lg.open">ещё возможно</span> ·
+          <span class="lg lg-probe"></span> <span data-i18n="review.lg.probe">точка пеленга</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="review-nav">
+      <button type="button" class="btn ghost" id="review-prev" data-i18n="review.prev" data-i18n-title="review.prev.title" title="Предыдущий ход (←)">← Назад</button>
+      <span class="review-step mono" id="review-step">—</span>
+      <button type="button" class="btn ghost" id="review-next" data-i18n="review.next" data-i18n-title="review.next.title" title="Следующий ход (→)">Вперёд →</button>
+      <button type="button" class="btn ghost" id="review-play" data-i18n="review.play">Проиграть</button>
+    </div>
+
+    <div class="review-scroll">
+      <table class="review" id="review-table">
+        <thead>
+          <tr><th>№</th><th data-i18n="th.cell">Клетка</th><th data-i18n="th.answer">Ответ</th><th data-i18n="th.bits">Бит</th><th data-i18n="th.note">Оценка</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="small muted" data-i18n="review.bits.note">«Бит» — сколько информации принёс ход; ноль значит, что ответ можно было предсказать заранее. Строку можно выбрать: поле сверху покажет, что именно она доказала.</p>
+    <div class="sheet-actions">
+      <button type="button" class="btn ghost" id="btn-review-txt" data-i18n="btn.txt" data-i18n-title="btn.txt.title" title="Сохранить разбор текстом">Скачать .txt</button>
+      <button type="button" class="btn ghost" id="btn-review-png" data-i18n="btn.png" data-i18n-title="btn.png.title" title="Сохранить разбор картинкой">Скачать .png</button>
+      <button type="button" class="btn primary" data-close data-i18n="btn.got">Понятно</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="daily-modal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="daily-title">
+    <button type="button" class="x" data-close aria-label="Закрыть">×</button>
+    <p class="eyebrow" data-i18n="daily.eyebrow">Задача дня</p>
+    <h2 id="daily-title" data-i18n="daily.title">История задач дня</h2>
+    <p class="lead" id="daily-stats">—</p>
+    <div class="review-scroll">
+      <table class="review" id="daily-table">
+        <thead>
+          <tr><th data-i18n="th.date">Дата</th><th data-i18n="th.moves">Ходов</th><th data-i18n="th.game">Партия</th><th></th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="small muted" data-i18n="daily.note">Расстановка дня выводится из даты. Прошлый день можно переиграть: результат попадёт в историю дня, но не в рекорды уровня и не в общую статистику.</p>
+    <div class="sheet-actions">
+      <button type="button" class="btn ghost" id="btn-daily-today" data-i18n="btn.dailyToday">Сегодняшняя задача</button>
+      <button type="button" class="btn primary" data-close data-i18n="btn.got">Понятно</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="stats-modal" hidden>
+  <div class="sheet wide-sheet" role="dialog" aria-modal="true" aria-labelledby="stats-title">
+    <button type="button" class="x" data-close aria-label="Закрыть">×</button>
+    <p class="eyebrow" data-i18n="stats.eyebrow">Итоги</p>
+    <h2 id="stats-title" data-i18n="stats.title">Рекорды и статистика</h2>
+    <p class="lead" id="stats-summary">—</p>
+    <div class="review-scroll">
+      <table class="review" id="stats-table">
+        <thead>
+          <tr><th data-i18n="th.mode">Режим</th><th data-i18n="th.games">Партий</th><th data-i18n="th.wins">Побед</th><th data-i18n="th.forfeits">Сдач</th><th data-i18n="win.record">Рекорд</th><th data-i18n="stat.time">Время</th><th data-i18n="th.game">Партия</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="small muted" data-i18n="stats.note">В файл попадают все режимы: уровни классики, МК-61 и каждая настройка гона отдельно. Время — лучшее в рекордной партии.</p>
+    <div class="sheet-actions">
+      <button type="button" class="btn ghost" id="btn-stats-csv" data-i18n="btn.csv">Скачать .csv</button>
+      <button type="button" class="btn ghost" id="btn-stats-json" data-i18n="btn.json">Скачать .json</button>
+      <button type="button" class="btn primary" data-close data-i18n="btn.close">Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="share-modal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="share-title">
+    <button type="button" class="x" data-close aria-label="Закрыть">×</button>
+    <p class="eyebrow" data-i18n="share.eyebrow">Дуэль</p>
+    <h2 id="share-title" data-i18n="share.title">Ссылка на партию</h2>
+    <p class="lead" id="share-note" data-i18n="share.lead">Соперник откроет ту же расстановку и увидит норму — ваши ходы.</p>
+    <div class="share-row">
+      <textarea id="share-link" readonly rows="2" spellcheck="false" data-i18n-aria="aria.link" aria-label="Ссылка на партию"></textarea>
+      <button type="button" class="btn primary" id="btn-copy" data-i18n="btn.copy">Копировать</button>
+    </div>
+    <p class="small muted" data-i18n="share.note">Ссылку можно открыть в другой вкладке или на другом устройстве. Номер партии и норма
+      живут в адресе — сервера у игры нет.</p>
+    <div class="sheet-actions">
+      <button type="button" class="btn ghost" data-close data-i18n="btn.got">Понятно</button>
+    </div>
+  </div>
+</div>
+
+<section class="print-sheet" id="print-sheet" hidden>
+  <header class="print-head">
+    <h1 data-i18n="print.title">Охота на лис</h1>
+    <p id="print-meta"></p>
+  </header>
+  <div class="print-body">
+    <div>
+      <h2 data-i18n="print.board">Поле</h2>
+      <div class="print-grid" id="print-grid"></div>
+      <p class="print-note" data-i18n="print.note">Пеленг: строка + столбец + две диагонали. Ловится одна лиса за заход.
+        В клетке может сидеть несколько лис.</p>
+    </div>
+    <div>
+      <h2 data-i18n="print.log">Журнал</h2>
+      <table class="print-log" id="print-log">
+        <thead><tr><th>№</th><th data-i18n="th.cell">Клетка</th><th data-i18n="th.answer">Ответ</th><th>№</th><th data-i18n="th.cell">Клетка</th><th data-i18n="th.answer">Ответ</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="print-key">
+    <h2 data-i18n="print.key">Ключ для ведущего</h2>
+    <p class="print-note" data-i18n="print.keynote">Эту страницу охотнику не показывают: здесь расстановка.</p>
+    <div class="print-grid small" id="print-key-grid"></div>
+  </div>
+</section>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="assets/i18n.js"></script>
+<script src="assets/engine.js"></script>
+<script src="assets/solver.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
