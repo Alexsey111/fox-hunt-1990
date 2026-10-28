@@ -1,0 +1,55 @@
+apply plugin: 'com.android.application'
+
+/* Подпись берётся из окружения: в CI переменные приходят из секретов репозитория.
+   Нет ключа — APK соберётся неподписанным (для проверки), подписанным его сделает
+   только сборка с ANDROID_KEYSTORE_FILE. */
+def ksFile = System.getenv('ANDROID_KEYSTORE_FILE')
+def hasKey = ksFile != null && file(ksFile).exists()
+
+android {
+  namespace 'ru.foxhunt.game'
+  compileSdk 34
+
+  defaultConfig {
+    applicationId 'ru.foxhunt.game'
+    minSdk 24
+    targetSdk 34
+    versionCode Integer.parseInt(System.getenv('APP_VERSION_CODE') ?: '1004')
+    versionName System.getenv('APP_VERSION_NAME') ?: '1.0.4'
+  }
+
+  signingConfigs {
+    release {
+      if (hasKey) {
+        storeFile file(ksFile)
+        storePassword System.getenv('ANDROID_KEYSTORE_PASSWORD')
+        keyAlias System.getenv('ANDROID_KEY_ALIAS') ?: 'foxhunt'
+        keyPassword System.getenv('ANDROID_KEY_PASSWORD') ?: System.getenv('ANDROID_KEYSTORE_PASSWORD')
+      }
+    }
+  }
+
+  buildTypes {
+    release {
+      minifyEnabled false
+      shrinkResources false
+      if (hasKey) signingConfig signingConfigs.release
+    }
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_17
+    targetCompatibility JavaVersion.VERSION_17
+  }
+
+  /* веб-версия кладётся в assets/www скриптом tools/build-android.sh */
+  sourceSets {
+    main {
+      assets.srcDirs = ['src/main/assets']
+    }
+  }
+}
+
+dependencies {
+  implementation 'androidx.webkit:webkit:1.11.0'
+}

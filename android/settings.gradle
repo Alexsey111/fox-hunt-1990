@@ -1,0 +1,12 @@
+// Настройки проекта Android-обёртки «Охоты на лис».
+// Приложение — тонкая оболочка: WebView с локальной копией веб-версии из dist-web.
+pluginManagement {
+  repositories {
+    google()
+    mavenCentral()
+    gradlePluginPortal()
+  }
+}
+
+rootProject.name = 'oxota-na-lis'
+include ':app'
