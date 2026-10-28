@@ -30,6 +30,9 @@
   add('btn.rules', 'Правила', 'Rules');
   add('btn.lang', 'EN', 'RU');
   add('btn.lang.title', 'Переключить на английский', 'Switch to Russian');
+  add('btn.install', 'Установить', 'Install');
+  add('btn.install.title', 'Установить игру на устройство', 'Install the game on this device');
+  add('toast.installed', 'Игра установлена — ярлык на экране', 'Installed — the shortcut is on your screen');
   add('aria.variant', 'Вариант игры', 'Game variant');
   add('var.classic', 'Классика 1990', 'Classic 1990');
   add('var.chase', 'Гон', 'Chase');

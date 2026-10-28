@@ -1,6 +1,8 @@
 # зависимости и сборка
 node_modules/
 dist-desktop/
+dist-web/
+dist-web.zip
 build-out*/
 
 # временные файлы проверок

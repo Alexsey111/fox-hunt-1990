@@ -5,6 +5,13 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; object-src 'none'; base-uri 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Охота на лис — логическая игра Ю. Иванова и П. Иртюги из «Науки и жизни» № 10 за 1990 год. Поле 10×10, восемь лис, классическая пеленгация.">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0a0b0e">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Охота на лис">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon-180.png">
 <title>Охота на лис — 1990 / 2026</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M3.2 2.4 9.4 6.1h5.2l6.2-3.7-.6 12.2L12 22 3.8 14.6Z' fill='%23ff7a3d'/></svg>">
 <link rel="stylesheet" href="assets/styles.css">
@@ -36,6 +43,7 @@
         <span data-i18n="btn.sound">Звук</span> <span class="sound-dot" aria-hidden="true"></span>
       </button>
       <button type="button" class="btn ghost" id="btn-rules" data-i18n="btn.rules">Правила</button>
+      <button type="button" class="btn ghost" id="btn-install" hidden data-i18n="btn.install" data-i18n-title="btn.install.title" title="Установить на устройство">Установить</button>
     </div>
   </header>
 

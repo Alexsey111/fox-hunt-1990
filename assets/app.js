@@ -2744,4 +2744,44 @@
   /* Признак «интерфейс собран»: по нему десктопная обёртка ждёт кадр для снимка,
      а не спит фиксированные миллисекунды. */
   document.documentElement.dataset.ready = '1';
+
+  /* ---------- установка как приложение (PWA) ----------
+     Манифест и service worker действуют только по http(s): на file:// и в
+     Electron регистрация молча пропускается, игра работает как раньше.
+     Кнопка «Установить» появляется сама, когда браузер считает игру
+     устанавливаемой (beforeinstallprompt); в уже установленном приложении
+     этого события не бывает, и кнопки нет. */
+  var btnInstall = el('btn-install');
+  var installEvent = null;
+
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    installEvent = e;
+    if (btnInstall) btnInstall.hidden = false;
+  });
+
+  if (btnInstall) {
+    btnInstall.addEventListener('click', function () {
+      if (!installEvent) { btnInstall.hidden = true; return; }
+      installEvent.prompt();
+      installEvent.userChoice.then(function (res) {
+        if (res && res.outcome === 'accepted') toast(T('toast.installed'));
+        installEvent = null;
+        btnInstall.hidden = true;
+      })['catch'](function () { installEvent = null; btnInstall.hidden = true; });
+    });
+  }
+
+  window.addEventListener('appinstalled', function () {
+    if (btnInstall) btnInstall.hidden = true;
+    toast(T('toast.installed'));
+  });
+
+  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js')['catch'](function () {
+        /* офлайн-копия — удобство, а не условие игры: молча живём без неё */
+      });
+    });
+  }
 })();

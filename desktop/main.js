@@ -253,8 +253,10 @@ function createWindow() {
           return new Promise(function (resolve) { setTimeout(resolve, 250); });
         });
       }).then(function () {
+        if (SELFTEST) return null;
         return win.webContents.capturePage();
       }).then(function (image) {
+        if (!image) return;   /* самопроверка уже вышла со своим кодом */
         fs.writeFileSync(SMOKE_OUT, image.toPNG());
         console.log('SMOKE_OK ' + SMOKE_OUT);
         app.quit();
