@@ -218,6 +218,13 @@ h1 {
   box-shadow: 0 30px 70px -38px #000, inset 0 1px 0 rgba(255, 255, 255, .045);
 }
 
+/* Планшет в ландшафте и невысокие ноутбуки: ширина поля тянется за шириной окна,
+   и на 1024×768 поле уезжало под нижний край. Ограничиваем его высотой экрана,
+   чтобы доска была видна целиком и не приходилось прокручивать страницу. */
+@media (min-width: 561px) and (max-height: 940px) {
+  .board-wrap { max-width: min(660px, calc(100vh - 230px)); }
+}
+
 .board {
   display: grid;
   grid-template-columns: 1.45rem repeat(var(--n, 10), minmax(0, 1fr));

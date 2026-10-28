@@ -19,11 +19,12 @@
   var LINKS = {
     web: 'https://alexsey111.github.io/fox-hunt-1990/',        /* своя страница веб-версии */
     win: 'https://github.com/Alexsey111/fox-hunt-1990/releases/latest/download/oxota-na-lis-setup.exe',
+    rustore: '',  /* https://www.rustore.ru/catalog/app/ru.foxhunt.game — после публикации */
     donate: 'https://yoomoney.ru/to/4100119669666956'          /* визитка ЮMoney для переводов */
   };
 
   function paintLinks() {
-    var keys = ['web', 'win', 'donate'];
+    var keys = ['web', 'win', 'rustore', 'donate'];
     for (var i = 0; i < keys.length; i++) {
       var url = LINKS[keys[i]];
       var els = document.querySelectorAll('[data-' + keys[i] + ']');

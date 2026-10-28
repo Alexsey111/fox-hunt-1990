@@ -674,6 +674,8 @@
   add('foot.author', 'Воссоздал и дополнил: Алексей (Alexsey111)', 'Rebuilt and extended by Alexey (Alexsey111)');
   add('foot.repo', 'Код и веб-версия на GitHub', 'Source code and web version on GitHub');
   add('foot.repo.title', 'Открыть репозиторий на GitHub', 'Open the repository on GitHub');
+  add('foot.rustore', 'Приложение в RuStore', 'App in RuStore');
+  add('foot.rustore.title', 'Открыть приложение в RuStore', 'Open the app in RuStore');
   add('foot.win', 'Скачать для Windows', 'Download for Windows');
   add('foot.win.title', 'Установщик для Windows с GitHub', 'Windows installer from GitHub');
   add('foot.donate', 'Поддержать проект', 'Support the project');
@@ -691,6 +693,10 @@
   add('rules.w2',
     'Для Windows есть установщик и portable-версия в одном файле (~79 МБ, интернет не нужен): <a class="foot-link" data-win target="_blank" rel="noopener">скачать с GitHub</a>.',
     'For Windows there is an installer and a single-file portable build (~79 MB, no internet needed): <a class="foot-link" data-win target="_blank" rel="noopener">download from GitHub</a>.');
+
+  add('rules.w2a',
+    'Для Android приложение лежит в RuStore: <a class="foot-link" data-rustore target="_blank" rel="noopener">открыть в RuStore</a>. Ничего покупать и подключать не нужно.',
+    'For Android the app is on RuStore: <a class="foot-link" data-rustore target="_blank" rel="noopener">open in RuStore</a>. Nothing to buy or subscribe to.');
   add('rules.w3',
     'Рекламы в игре нет и не будет. Поддержать проект можно добровольно: <a class="foot-link" data-donate target="_blank" rel="noopener">перевести любую сумму</a>.',
     'There is no advertising in the game and there will be none. You can support the project voluntarily: <a class="foot-link" data-donate target="_blank" rel="noopener">send any amount</a>.');
