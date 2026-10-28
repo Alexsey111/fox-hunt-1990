@@ -96,6 +96,10 @@
   function buildConstraints(game, upto, U) {
     var n = game.size, log = game.log, out = [], i, j, q;
     var events = moveEvents(game, upto);
+    /* Радиус, на который лиса может уйти за одну перебежку. Сейчас в игре
+       шаг всегда 1, но формула обязана следовать за настройкой: при шаге N
+       умирает не только соседняя клетка, а вся окрестность радиуса N. */
+    var step = (game.chase && (game.chase.step | 0)) || 1;
 
     function firstEventAfter(idx) {
       for (var e = 0; e < events.length; e++) if (events[e].idx > idx) return e;
@@ -116,16 +120,16 @@
 
           if (isCellProbe) {
             var crow = Math.floor(cellIdx / n), ccol = cellIdx % n;
-            if (Math.abs(orow - crow) <= 1 && Math.abs(ocol - ccol) <= 1) return false;
+            if (Math.abs(orow - crow) <= step && Math.abs(ocol - ccol) <= step) return false;
             continue;
           }
 
-          /* Лиса ушла из своей клетки и встала на любую соседнюю. Счёт по набору
+          /* Лиса ушла из своей клетки и встала в любую в пределах шага. Счёт по набору
              не изменится, только если набор не задевает ни исходную клетку,
-             ни её окрестность: иначе лиса могла из набора уйти или в него войти. */
+             ни её окрестность радиуса шага: иначе лиса могла из набора уйти или в него войти. */
           for (q = 0; q < cellSet.length; q++) {
             var srow = Math.floor(cellSet[q] / n), scol = cellSet[q] % n;
-            if (Math.abs(srow - orow) <= 1 && Math.abs(scol - ocol) <= 1) return false;
+            if (Math.abs(srow - orow) <= step && Math.abs(scol - ocol) <= step) return false;
           }
         }
       }
