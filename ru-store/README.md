@@ -7,7 +7,7 @@
 
 | Поле карточки | Файл |
 |---|---|
-| APK | `https://github.com/Alexsey111/fox-hunt-1990/releases/latest/download/oxota-na-lis-1.0.4.apk` (634 КБ, подписан, sha256 `b68bee68…d9675`) |
+| APK | `https://github.com/Alexsey111/fox-hunt-1990/releases/latest/download/oxota-na-lis-1.0.5.apk` (638 КБ, подписан, sha256 `f2a13cad…ced489`) |
 | Иконка 512×512 | `assets/icons/icon-512.png` |
 | Скриншоты телефона | `ru-store/скриншоты/01-поле.png`, `02-правила.png`, `03-мк61.png` (1080×1920) |
 | Краткое описание | `ru-store/описание-краткое.txt` (≤ 80 символов) |
@@ -36,6 +36,12 @@ APK собирается в GitHub Actions: Actions → workflow «android» →
    проекта.
 
 ## О чём стоит помнить
+
+- APK проверяется на эмуляторе прямо в CI: workflow `android` содержит job `smoke`,
+  который ставит APK, запускает `ru.foxhunt.game/.MainActivity`, ждёт 25 секунд и снимает
+  экран. Снимок успешного прогона — `ru-store/проверка-apk-эмулятор.png`: видно шапку,
+  уровни, поле 10×10, строку «найдено 0/8 · ходы 0» и панель пеленга. В logcat нет ни
+  ошибок Chromium, ни сетевых отказов.
 
 - RuStore требует, чтобы APK был подписан; наш подписан схемой v2/v3.
 - Для бесплатных приложений без покупок платёжные инструменты и самозанятость не нужны.
