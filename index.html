@@ -92,6 +92,7 @@
   <main class="layout">
 
     <section class="board-wrap" data-i18n-aria="aria.board" aria-label="Игровое поле">
+      <div class="board-echo" id="board-echo" aria-live="polite"></div>
       <div class="board" id="board"></div>
       <div class="blind-screen" id="blind-screen">
         <b data-i18n="blind.title">ПОЛЯ НЕТ</b>
@@ -174,6 +175,8 @@
         <button type="button" class="btn ghost" id="btn-hint"><span data-i18n="btn.hint">Подсказка</span><span class="btn-key">H</span></button>
         <button type="button" class="btn ghost" id="btn-review" data-i18n="btn.review">Разбор</button>
         <button type="button" class="btn ghost" id="btn-print" data-i18n="btn.print">Печать</button>
+        <button type="button" class="btn ghost" id="btn-print-blank" data-i18n="btn.print.blank"
+                data-i18n-title="btn.print.blank.title" title="Распечатать пустое поле, чтобы отмечать на бумаге">Пустое поле</button>
       </div>
 
       <div class="actions">
@@ -203,9 +206,16 @@
     <span id="foot-level" data-i18n="foot.level">Поле 10 × 10 · восемь лис</span>
     <span data-i18n="foot.bearing">Пеленг: строка, столбец и две диагонали</span>
     <span class="foot-dim" data-i18n="foot.dim">Логика 1990 года, оболочка 2026-го</span>
-    <span class="foot-dim" data-i18n="foot.author">Воссоздал и дополнил: Алексей</span>
+    <span class="foot-dim" data-i18n="foot.author">Воссоздал и дополнил: Алексей (Alexsey111)</span>
     <a class="foot-link" href="https://github.com/Alexsey111/fox-hunt-1990" target="_blank" rel="noopener"
        data-i18n="foot.repo" data-i18n-title="foot.repo.title" title="Открыть репозиторий на GitHub">Код и веб-версия на GitHub</a>
+    <a class="foot-link" id="foot-win" data-win hidden target="_blank" rel="noopener"
+       data-i18n="foot.win" data-i18n-title="foot.win.title" title="Скачать установщик для Windows">Скачать для Windows</a>
+    <a class="foot-link" id="foot-donate" data-donate hidden target="_blank" rel="noopener"
+       data-i18n="foot.donate" data-i18n-title="foot.donate.title" title="Поддержать проект">Поддержать проект</a>
+    <button type="button" class="foot-link foot-btn" data-print-blank
+            data-i18n="foot.blank" data-i18n-title="foot.blank.title"
+            title="Распечатать пустое поле для отметок на бумаге">Бланк для печати</button>
   </footer>
 </div>
 
@@ -271,6 +281,18 @@
     </ul>
 
     <p class="small muted" data-i18n="rules.tiny">В оригинале поля на экране не было вовсе: МК-61 показывал только числа, а координаты вводились через точку. Расстановка, поимка по одной лисе и правило четырёх лучей оставлены без изменений — современная только оболочка.</p>
+
+    <h3 data-i18n="rules.h.where">Где взять и как поддержать</h3>
+    <ul class="rules-list">
+      <li data-i18n-html="rules.w1">Веб-версия открывается в браузере без установки и работает офлайн после
+        первого открытия: <a class="foot-link" data-web target="_blank" rel="noopener">играть в браузере</a>.</li>
+      <li data-i18n-html="rules.w2">Для Windows есть установщик и portable-версия в одном файле
+        (~79 МБ, без интернета): <a class="foot-link" data-win target="_blank" rel="noopener">скачать с GitHub</a>.</li>
+      <li data-i18n-html="rules.w3">Рекламы в игре нет и не будет. Поддержать проект можно добровольно:
+        <a class="foot-link" data-donate target="_blank" rel="noopener">перевести любую сумму</a>.</li>
+      <li data-i18n="rules.w4">Сервера у игры нет: партии, рекорды и настройки хранятся только в браузере
+        или в профиле приложения и никуда не отправляются.</li>
+    </ul>
 
     <div class="sheet-actions">
       <button type="button" class="btn primary" data-close data-i18n="btn.got">Понятно</button>
@@ -437,6 +459,33 @@
     <h2 data-i18n="print.key">Ключ для ведущего</h2>
     <p class="print-note" data-i18n="print.keynote">Эту страницу охотнику не показывают: здесь расстановка.</p>
     <div class="print-grid small" id="print-key-grid"></div>
+  </div>
+</section>
+
+<!-- Пустой бланк: ни расстановки, ни журнала — только поле и место для отметок.
+     Для «Слепого», «Ветерана» и для игры в паре: охотник отмечает на листке,
+     ведущий держит расстановку (ключ печатается отдельной кнопкой «Печать»). -->
+<section class="print-sheet" id="print-blank" hidden>
+  <header class="print-head">
+    <h1 data-i18n="print.title">Охота на лис</h1>
+    <p id="print-blank-meta"></p>
+  </header>
+  <div class="print-body">
+    <div>
+      <h2 data-i18n="print.board">Поле</h2>
+      <div class="print-grid big" id="print-blank-grid"></div>
+      <p class="print-note" data-i18n="print.blank.note">Пеленг — сколько не пойманных лис на строке, столбце и двух
+        диагоналях этой клетки. Координаты записывайте как 4.3: строка, затем столбец. Ловится одна лиса за заход.</p>
+    </div>
+    <div>
+      <h2 data-i18n="print.blank.log">Заходы</h2>
+      <table class="print-log" id="print-blank-log">
+        <thead><tr><th>№</th><th data-i18n="th.cell">Клетка</th><th data-i18n="th.answer">Ответ</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <p class="print-note" data-i18n="print.blank.how">«?» — здесь может быть лиса, «×» — здесь её точно нет.
+        Пойманные лисы из пеленга вычитаются.</p>
+    </div>
   </div>
 </section>
 

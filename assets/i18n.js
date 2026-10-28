@@ -99,6 +99,9 @@
   add('btn.hint', 'Подсказка', 'Hint');
   add('btn.review', 'Разбор', 'Review');
   add('btn.print', 'Печать', 'Print');
+  add('btn.print.blank', 'Пустое поле', 'Blank sheet');
+  add('btn.print.blank.title', 'Распечатать пустое поле, чтобы отмечать пеленги на бумаге',
+    'Print an empty board to mark bearings on paper');
   add('btn.new', 'Новая партия', 'New game');
   add('btn.undo', 'Отменить', 'Undo');
   add('btn.undo.title', 'Отменить последний заход (Ctrl+Z)', 'Undo the last probe (Ctrl+Z)');
@@ -306,6 +309,19 @@
     'Пеленг: строка + столбец + две диагонали. Ловится одна лиса за заход. В клетке может сидеть несколько лис.',
     'Bearing: row + column + both diagonals. One fox is caught per call. A cell may hold several foxes.');
   add('print.log', 'Журнал', 'Log');
+  add('print.blank.log', 'Заходы', 'Moves');
+  add('print.blank.meta', 'Поле {size} × {size} · {foxes} · партия {seed}',
+    'Board {size} × {size} · {foxes} · game {seed}');
+  add('print.blank.blank', 'Пустой бланк: расстановки на листке нет.',
+    'A blank sheet: no foxes are printed on it.');
+  add('print.blank.mk61', 'Как на МК-61: поле ведите на бумаге, экран отвечает только пеленгом.',
+    'As on the MK-61: keep the board on paper, the screen only answers with bearings.');
+  add('print.blank.note',
+    'Пеленг — сколько не пойманных лис на строке, столбце и двух диагоналях этой клетки. Координаты записывайте как 4.3: строка, затем столбец. Ловится одна лиса за заход.',
+    'A bearing is how many uncaught foxes sit on this cell’s row, column and both diagonals. Write coordinates as 4.3: row first, then column. One fox is caught per move.');
+  add('print.blank.how',
+    '«?» — здесь может быть лиса, «×» — здесь её точно нет. Пойманные лисы из пеленга вычитаются.',
+    '“?” — a fox may be here, “×” — there is certainly none. Caught foxes are subtracted from bearings.');
   add('print.key', 'Ключ для ведущего', 'Host’s key');
   add('print.keynote', 'Эту страницу охотнику не показывают: здесь расстановка.',
     'The hunter never sees this page: the layout is here.');
@@ -655,9 +671,32 @@
   add('win.note.best.authors', ' Это не хуже рекорда авторов (19 ходов).',
     ' That is no worse than the authors’ record (19 moves).');
 
-  add('foot.author', 'Воссоздал и дополнил: Алексей', 'Rebuilt and extended by Alexey');
+  add('foot.author', 'Воссоздал и дополнил: Алексей (Alexsey111)', 'Rebuilt and extended by Alexey (Alexsey111)');
   add('foot.repo', 'Код и веб-версия на GitHub', 'Source code and web version on GitHub');
   add('foot.repo.title', 'Открыть репозиторий на GitHub', 'Open the repository on GitHub');
+  add('foot.win', 'Скачать для Windows', 'Download for Windows');
+  add('foot.win.title', 'Установщик для Windows с GitHub', 'Windows installer from GitHub');
+  add('foot.donate', 'Поддержать проект', 'Support the project');
+  add('foot.donate.title', 'Добровольный перевод на поддержку игры', 'A voluntary donation to support the game');
+  add('foot.blank', 'Бланк для печати', 'Printable sheet');
+  add('foot.blank.title', 'Распечатать пустое поле, чтобы отмечать на бумаге',
+    'Print an empty board to mark on paper');
+  add('echo.stats', 'найдено {found}/{total} · ходы {moves}',
+    'found {found}/{total} · moves {moves}');
+
+  add('rules.h.where', 'Где взять и как поддержать', 'Where to get it and how to support it');
+  add('rules.w1',
+    'Веб-версия открывается в браузере без установки и работает офлайн после первого открытия: <a class="foot-link" data-web target="_blank" rel="noopener">играть в браузере</a>.',
+    'The web version opens in a browser with nothing to install and works offline after the first visit: <a class="foot-link" data-web target="_blank" rel="noopener">play in the browser</a>.');
+  add('rules.w2',
+    'Для Windows есть установщик и portable-версия в одном файле (~79 МБ, интернет не нужен): <a class="foot-link" data-win target="_blank" rel="noopener">скачать с GitHub</a>.',
+    'For Windows there is an installer and a single-file portable build (~79 MB, no internet needed): <a class="foot-link" data-win target="_blank" rel="noopener">download from GitHub</a>.');
+  add('rules.w3',
+    'Рекламы в игре нет и не будет. Поддержать проект можно добровольно: <a class="foot-link" data-donate target="_blank" rel="noopener">перевести любую сумму</a>.',
+    'There is no advertising in the game and there will be none. You can support the project voluntarily: <a class="foot-link" data-donate target="_blank" rel="noopener">send any amount</a>.');
+  add('rules.w4',
+    'Сервера у игры нет: партии, рекорды и настройки хранятся только в браузере или в профиле приложения и никуда не отправляются.',
+    'The game has no server: games, records and settings live only in your browser or the app profile and are never sent anywhere.');
 
   function set(l) {
     lang = DICT[l] ? l : 'ru';

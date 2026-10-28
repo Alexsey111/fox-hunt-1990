@@ -827,11 +827,24 @@ html[data-theme="retro"] .duel-line { border-radius: 0; color: var(--gold); }
 
 .foot-dim { color: #4a5158; }
 
+.foot-link[hidden] { display: none; }
+.rules-list li[hidden] { display: none; }
+
 .foot-link {
   color: var(--dim);
   text-decoration: none;
   border-bottom: 1px solid transparent;
   transition: color .15s ease, border-color .15s ease;
+}
+
+/* кнопка выглядит как ссылка в подвале: у неё своя рамка и фон из UA-стилей */
+.foot-btn {
+  font: inherit;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  padding: 0;
+  cursor: pointer;
 }
 
 .foot-link:hover,
@@ -983,21 +996,65 @@ html[data-theme="retro"] .foot-link:hover {
 
 @media (max-width: 560px) {
   body { font-size: 14px; }
-  .app { padding: 14px 12px 22px; }
-  .brand-mark { width: 38px; height: 38px; }
-  .sub { font-size: 11px; }
-  .top-actions { width: 100%; }
-  .top-actions .btn { flex: 1; }
-  .seg { order: -1; }
-  .board { grid-template-columns: 1.2rem repeat(var(--n, 10), minmax(0, 1fr)); gap: 2px; }
-  .lv-btn { flex: 1 1 46%; border-radius: 8px; }
-  .levels { margin-bottom: 14px; }
+  .app { padding: 10px 10px 20px; }
+  /* шапка на телефоне: без подзаголовка и с мелкими кнопками в один-два ряда,
+     иначе она съедает четверть экрана до поля */
+  .brand-mark { width: 30px; height: 30px; }
+  .brand-text h1 { font-size: 17px; }
+  .sub { display: none; }
+  .top { gap: 8px; padding-bottom: 8px; }
+  .top-actions { width: 100%; gap: 6px; flex-wrap: wrap; }
+  .top-actions .btn { flex: 0 0 auto; padding: 6px 10px; font-size: 12px; }
+  .seg { order: 0; }
+  .seg-btn { padding: 5px 9px; font-size: 11.5px; }
+  .variants { gap: 6px; margin-bottom: 8px; }
+  .variant-btn { flex: 1 1 0; padding: 8px 6px; font-size: .74rem; border-radius: 8px; }
+  .levels { gap: 6px; margin-bottom: 10px; }
+  .lv-btn { flex: 1 1 46%; padding: 7px 9px; border-radius: 8px; }
+  .lv-btn b { font-size: 12px; }
+  .lv-btn span { font-size: 9.5px; }
+  .board-wrap { padding: 8px; border-radius: 14px; }
+  /* строка «Координаты · строка, столбец» не должна задавать минимальную
+     ширину всей страницы: на 320 она растягивала макет до 382 */
+  .coord label { flex-wrap: wrap; gap: 2px 8px; }
+  .coord label span { font-size: 10.5px; }
+  /* сетка вместо flex: у поля ввода своя внутренняя ширина (~285px),
+     из-за неё страница на узком экране не сжималась ниже 382 */
+  .coord-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+  .board { grid-template-columns: 1.05rem repeat(var(--n, 10), minmax(0, 1fr)); gap: 2px; }
   .hint-extra { display: none; }
-  .cell { border-radius: 7px; }
+  .cell { border-radius: 6px; }
   .axis { font-size: 9px; }
   .lcd-value { font-size: 36px; }
   .foot { font-size: 10.5px; gap: 4px 12px; }
   .win-stats b { font-size: 18px; }
+}
+
+/* строка-эхо над полем нужна только там, где панель пеленга уезжает вниз */
+.board-echo { display: none; }
+
+/* очень узкие экраны (320–400): выигрываем по пикселю у полей и зазоров,
+   чтобы клетка 12×12 оставалась нажимаемой */
+@media (max-width: 400px) {
+  .app { padding: 8px 8px 18px; }
+  .board-wrap { padding: 6px; }
+  .board { grid-template-columns: .95rem repeat(var(--n, 10), minmax(0, 1fr)); gap: 1px; }
+  .board-echo { font-size: 11px; }
+  .top-actions .btn { padding: 6px 8px; }
+}
+
+@media (max-width: 940px) {
+  .board-echo {
+    display: block;
+    min-height: 1.2em;
+    margin: 0 0 6px;
+    font: 600 12px/1.25 var(--mono);
+    letter-spacing: .03em;
+    color: var(--sig);
+  }
+  /* в МК-61 свой индикатор «НАЙДЕНО» — дублировать его строкой над полем незачем */
+  .board-wrap.is-calc .board-echo { display: none; }
+  .board-echo.is-fox { color: var(--fox); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1216,7 +1273,7 @@ html[data-theme="retro"] .foot { border-top-width: 2px; }
   .chase-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 10px; }
   .chase-item { flex-direction: column; align-items: stretch; gap: 3px; font-size: .66rem; }
   .chase-item select { width: 100%; padding: 5px 6px; }
-  .variant-btn { flex: 1 1 46%; padding: 8px 10px; font-size: .8rem; }
+  .variant-btn { flex: 1 1 0; padding: 8px 6px; font-size: .72rem; }
 }
 
 /* число осталось на доске, но расстановка уже другая */
@@ -1362,7 +1419,8 @@ html[data-theme="retro"] .mb { border-radius: 0; }
   @page { margin: 12mm; }
   html, body { background: #fff !important; color: #000 !important; }
   .app, .modal, .toast { display: none !important; }
-  .print-sheet { display: block !important; font-family: Georgia, 'Times New Roman', serif; }
+  .print-sheet { display: block !important; font-family: Georgia, 'Times New Roman', serif;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .print-head { border-bottom: 2px solid #000; padding-bottom: 6px; margin-bottom: 12px; }
   .print-head h1 { margin: 0; font-size: 20pt; }
   .print-head p { margin: 2px 0 0; font-size: 9pt; }
@@ -1371,6 +1429,7 @@ html[data-theme="retro"] .mb { border-radius: 0; }
   .print-grid {
     display: grid; grid-template-columns: repeat(var(--n, 10), 9mm);
     border-top: 1px solid #000; border-left: 1px solid #000;
+    width: fit-content;
   }
   .print-grid span {
     width: 9mm; height: 9mm; border-right: 1px solid #000; border-bottom: 1px solid #000;
@@ -1378,11 +1437,20 @@ html[data-theme="retro"] .mb { border-radius: 0; }
   }
   .print-grid span.axis { background: #eee; color: #000; font-weight: 700; }
   .print-grid span.fox { background: #111; }
+  /* крестик — страховка на случай, если принтер не печатает фоновую заливку:
+     на чёрном квадрате его не видно, на белом он читается как метка лисы */
+  .print-grid span.fox::after { content: '×'; color: #111; font-size: 9pt; font-weight: 700; line-height: 1; }
   .print-grid.small { grid-template-columns: repeat(var(--n, 10), 7mm); }
   .print-grid.small span { width: 7mm; height: 7mm; }
+  .print-grid.big { grid-template-columns: repeat(var(--n, 10), var(--cell, 14mm)); }
+  .print-grid.big span { width: var(--cell, 14mm); height: var(--cell, 14mm); font-size: 8pt; color: #bbb; }
+  /* печатается ровно один бланк: какой — задаёт кнопка через класс на body */
+  body.print-mode-key #print-blank,
+  body.print-mode-blank #print-sheet { display: none !important; }
   .print-note { font-size: 8pt; margin: 5px 0 0; max-width: 70mm; }
   table.print-log { border-collapse: collapse; font-size: 9pt; }
   table.print-log th, table.print-log td { border: 1px solid #999; padding: 2mm 2mm; min-width: 12mm; }
   table.print-log th { background: #eee; }
+  table.print-log td.write { min-width: 24mm; height: 7mm; }
   .print-key { page-break-before: always; padding-top: 6mm; border-top: 1px dashed #999; }
 }

@@ -10,6 +10,35 @@
   var STORE_KEY = 'fox1990.v2';
   var OLD_KEY = 'fox1990.v1';
 
+  /* Внешние адреса — в одном месте: подвал и правила «Где взять» берут их отсюда.
+     Пустая строка означает «такого адреса пока нет» — пункт просто не показывается,
+     битых ссылок в интерфейсе не бывает. */
+  var LINKS = {
+    web: '',      /* своя страница веб-версии: заполняется после публикации */
+    win: 'https://github.com/Alexsey111/fox-hunt-1990/releases/latest/download/oxota-na-lis-setup-1.0.4.exe',
+    donate: ''    /* Boosty или ЮMoney: заполняется, когда владелец заведёт страницу */
+  };
+
+  function paintLinks() {
+    var keys = ['web', 'win', 'donate'];
+    for (var i = 0; i < keys.length; i++) {
+      var url = LINKS[keys[i]];
+      var els = document.querySelectorAll('[data-' + keys[i] + ']');
+      for (var j = 0; j < els.length; j++) {
+        var li = els[j].closest ? els[j].closest('li[data-i18n-html]') : null;
+        if (url) {
+          els[j].setAttribute('href', url);
+          els[j].hidden = false;
+        } else {
+          els[j].removeAttribute('href');
+          els[j].hidden = true;
+        }
+        /* пункт правил без адреса бессмыслен — прячем строку целиком */
+        if (li) li.hidden = !url;
+      }
+    }
+  }
+
   var el = function (id) { return document.getElementById(id); };
 
   var boardEl = el('board');
@@ -21,6 +50,7 @@
   var statFound = el('stat-found');
   var statTotal = el('stat-total');
   var statMoves = el('stat-moves');
+  var boardEcho = el('board-echo');
   var statTime = el('stat-time');
   var statSeed = el('stat-seed');
   var coordForm = el('coord-form');
@@ -72,6 +102,10 @@
   var printKeyGrid = el('print-key-grid');
   var printLog = el('print-log');
   var printMeta = el('print-meta');
+  var printBlank = el('print-blank');
+  var printBlankGrid = el('print-blank-grid');
+  var printBlankMeta = el('print-blank-meta');
+  var printBlankLog = el('print-blank-log');
   var rulesModal = el('rules-modal');
   var winModal = el('win-modal');
   var toastEl = el('toast');
@@ -331,6 +365,7 @@
     savePrefs();
     I18N.set(lang);
     I18N.apply();
+    paintLinks();
     syncLangChrome();
     buildLevelBar();
     fillChaseCount();
@@ -1109,10 +1144,82 @@
     }
   }
 
+  /* Ровно один бланк за печать: классы взаимоисключающие, чтобы отменённый
+     или не отработавший afterprint не оставил оба листа скрытыми. */
+  function setPrintMode(mode) {
+    document.body.classList.remove('print-mode-key');
+    document.body.classList.remove('print-mode-blank');
+    document.body.classList.add(mode);
+  }
+
   function printSheetNow() {
     buildPrint();
+    setPrintMode('print-mode-key');
     window.print();
   }
+
+  /* Пустой бланк: поле без расстановки и пустой журнал. Нужен, когда поле
+     на экране скрыто («Слепой») или когда играют в паре — охотник отмечает
+     на листке, ведущий держит ключ (он печатается кнопкой «Печать»). */
+  function buildBlank() {
+    var g = state.game;
+    var lv = state.level;
+    var n = g ? g.size : (lv ? lv.size : 10);
+    var foxes = g ? g.totalFoxes : (lv ? lv.foxes : 8);
+    printBlankMeta.textContent = T('print.blank.meta', {
+      size: n, foxes: foxWord(foxes), seed: g ? String(g.seed).padStart(6, '0') : '—'
+    }) + ' · ' + T(lv && lv.calc ? 'print.blank.mk61' : 'print.blank.blank');
+
+    printBlankGrid.innerHTML = '';
+    printBlankGrid.style.setProperty('--n', String(n + 1));
+    /* на 12×12 клетки мельче, иначе бланк не влезает в A4 по ширине */
+    printBlankGrid.style.setProperty('--cell', n >= 12 ? '11mm' : '14mm');
+
+    var corner = document.createElement('span');
+    corner.className = 'axis';
+    printBlankGrid.appendChild(corner);
+    for (var c = 1; c <= n; c++) {
+      var top = document.createElement('span');
+      top.className = 'axis';
+      top.textContent = String(c);
+      printBlankGrid.appendChild(top);
+    }
+    for (var r = 1; r <= n; r++) {
+      var left = document.createElement('span');
+      left.className = 'axis';
+      left.textContent = String(r);
+      printBlankGrid.appendChild(left);
+      for (var cc = 1; cc <= n; cc++) printBlankGrid.appendChild(document.createElement('span'));
+    }
+
+    var tbody = printBlankLog.querySelector('tbody');
+    tbody.innerHTML = '';
+    var rows = 24;
+    for (var i = 1; i <= rows; i++) {
+      var tr = document.createElement('tr');
+      var num = document.createElement('td');
+      num.textContent = String(i);
+      var coord = document.createElement('td');
+      coord.className = 'write';
+      var answer = document.createElement('td');
+      answer.className = 'write';
+      tr.appendChild(num); tr.appendChild(coord); tr.appendChild(answer);
+      tbody.appendChild(tr);
+    }
+  }
+
+  function printBlankNow() {
+    buildBlank();
+    setPrintMode('print-mode-blank');
+    window.print();
+  }
+
+  /* После закрытия диалога печати бланк не должен оставаться выбранным:
+     иначе следующая печать «Печать» уйдёт в режим пустого листа. */
+  window.addEventListener('afterprint', function () {
+    document.body.classList.remove('print-mode-key');
+    document.body.classList.remove('print-mode-blank');
+  });
 
   /* Тренировка: середина партии, где часть поля уже запеленгована.
      Ходы, сделанные до игрока, в счёт не идут и в журнал не попадают,
@@ -1393,6 +1500,15 @@
     lcdValue.textContent = value;
     lcdNote.innerHTML = note;
     lcdBox.classList.toggle('is-fox', !!isFox);
+    /* на телефоне панель пеленга уезжает под доску: короткая строка над полем
+       показывает ответ там, где палец только что нажал */
+    if (boardEcho) {
+      var g = state.game;
+      var cells = state.lastKey ? state.lastKey.split(':').slice(0, 2).join('.') : '';
+      boardEcho.textContent = (cells ? cells + ' → ' + value + ' · ' : '') +
+        T('echo.stats', { found: g.foundTotal, total: g.totalFoxes, moves: movesShown() });
+      boardEcho.classList.toggle('is-fox', !!isFox);
+    }
   }
 
   function updateStats() {
@@ -2627,6 +2743,14 @@
   el('btn-stats-csv').addEventListener('click', exportStatsCsv);
   el('btn-stats-json').addEventListener('click', exportStatsJson);
   el('btn-print').addEventListener('click', printSheetNow);
+  el('btn-print-blank').addEventListener('click', printBlankNow);
+  /* второй вход к тому же бланку — из подвала: панель инструментов скрыта
+     в варианте «МК-61», а бланк там нужнее всего */
+  var blankTriggers = document.querySelectorAll('[data-print-blank]');
+  for (var bi = 0; bi < blankTriggers.length; bi++) {
+    if (blankTriggers[bi].id === 'btn-print-blank') continue;
+    blankTriggers[bi].addEventListener('click', printBlankNow);
+  }
   el('btn-train').addEventListener('click', startTraining);
 
   optAuto.addEventListener('change', function () {
@@ -2696,6 +2820,7 @@
   /* Язык — раньше всего остального: панели собираются уже с переводами. */
   I18N.set(prefs.lang === 'en' ? 'en' : 'ru');
   I18N.apply();
+  paintLinks();
   syncLangChrome();
 
   buildLevelBar();
