@@ -14,9 +14,9 @@
      Пустая строка означает «такого адреса пока нет» — пункт просто не показывается,
      битых ссылок в интерфейсе не бывает. */
   var LINKS = {
-    web: '',      /* своя страница веб-версии: заполняется после публикации */
-    win: 'https://github.com/Alexsey111/fox-hunt-1990/releases/latest/download/oxota-na-lis-setup-1.0.4.exe',
-    donate: ''    /* Boosty или ЮMoney: заполняется, когда владелец заведёт страницу */
+    web: 'https://alexsey111.github.io/fox-hunt-1990/',        /* своя страница веб-версии */
+    win: 'https://github.com/Alexsey111/fox-hunt-1990/releases/latest/download/oxota-na-lis-setup-1.0.5.exe',
+    donate: 'https://yoomoney.ru/to/4100119669666956'          /* визитка ЮMoney для переводов */
   };
 
   function paintLinks() {

@@ -1,6 +1,6 @@
 {
   "name": "fox-hunt-1990",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "private": true,
   "description": "Охота на лис — игра из «Науки и жизни» № 10, 1990, в современной оболочке",
   "scripts": {
