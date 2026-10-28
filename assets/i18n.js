@@ -697,6 +697,7 @@
   add('rules.w4',
     'Сервера у игры нет: партии, рекорды и настройки хранятся только в браузере или в профиле приложения и никуда не отправляются.',
     'The game has no server: games, records and settings live only in your browser or the app profile and are never sent anywhere.');
+  add('rules.privacy', 'Политика конфиденциальности', 'Privacy policy');
 
   function set(l) {
     lang = DICT[l] ? l : 'ru';

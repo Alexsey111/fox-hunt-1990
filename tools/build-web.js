@@ -14,6 +14,7 @@ var pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
 
 var FILES = [
   'index.html',
+  'privacy.html',
   'manifest.json',
   'sw.js',
   'assets/styles.css',
