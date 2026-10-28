@@ -59,12 +59,18 @@ self.addEventListener('fetch', function (e) {
   if (url.origin !== self.location.origin) return;
 
   if (req.mode === 'navigate') {
+    /* Сначала сеть: на сайте есть не только игра (privacy.html), и отдавать
+       на любой адрес оболочку игры нельзя. Из кэша страница берётся только
+       когда сети нет — тогда это офлайн-запуск, и подойдёт index.html. */
     e.respondWith(caches.open(CACHE).then(function (cache) {
-      return cache.match('./index.html').then(function (hit) {
-        var net = fresh(req, cache);
-        return hit || net.then(function (res) {
-          return res || new Response('Нет сети и нет копии игры.', {
-            status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+      return fresh(req, cache).then(function (res) {
+        if (res && res.ok) return res;
+        return cache.match(req, { ignoreSearch: true }).then(function (hit) {
+          if (hit) return hit;
+          return cache.match('./index.html').then(function (shell) {
+            return shell || new Response('Нет сети и нет копии игры.', {
+              status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+            });
           });
         });
       });
