@@ -112,3 +112,47 @@ jobs:
           TAG="${GITHUB_REF_NAME}"
           gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --title "$TAG" --notes "Сборка APK"
           gh release upload "$TAG" "out/oxota-na-lis-${APP_VERSION_NAME}.apk" --clobber
+
+  # Проверка, что APK не просто собрался, а ставится и открывается:
+  # эмулятор ставит его, запускает и делает снимок экрана.
+  smoke:
+    needs: apk
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: apk
+          path: out
+
+      - name: Разрешить KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: "Эмулятор — установить, запустить, снять экран"
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          script: |
+            set -e
+            adb install -r out/oxota-na-lis-*.apk
+            adb shell am start -W -n ru.foxhunt.game/.MainActivity
+            sleep 25
+            adb exec-out screencap -p > android-screen.png
+            adb shell dumpsys activity activities | grep -i foxhunt | head -5 > android-activity.txt || true
+            adb logcat -d -v brief | grep -iE "chromium|foxf?hunt|AndroidRuntime|FATAL" | tail -60 > android-log.txt || true
+            echo "снимок: $(stat -c%s android-screen.png) байт"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-smoke
+          path: |
+            android-screen.png
+            android-activity.txt
+            android-log.txt
