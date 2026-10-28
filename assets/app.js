@@ -1155,6 +1155,19 @@
   function printSheetNow() {
     buildPrint();
     setPrintMode('print-mode-key');
+    doPrint();
+  }
+
+  /* В Android-оболочке страница живёт во внутреннем WebView, и window.print()
+     там молчит: печать идёт через мост AndroidApp.printPage(), который
+     показывает системный диалог печати. В браузере — обычный window.print(). */
+  function doPrint() {
+    try {
+      if (window.AndroidApp && typeof window.AndroidApp.printPage === 'function') {
+        window.AndroidApp.printPage(document.title);
+        return;
+      }
+    } catch (err) { /* моста нет — печатаем как в браузере */ }
     window.print();
   }
 
@@ -1211,7 +1224,7 @@
   function printBlankNow() {
     buildBlank();
     setPrintMode('print-mode-blank');
-    window.print();
+    doPrint();
   }
 
   /* После закрытия диалога печати бланк не должен оставаться выбранным:
@@ -2071,9 +2084,21 @@
     duelLine.classList.toggle('is-lost', !!(g.over && g.won && mine > vs));
   }
 
+  /* В Android-оболочке адрес страницы внутренний
+     (appassets.androidplatform.net): такой ссылкой делиться нельзя — у получателя
+     она не откроется. Для дуэли в APK берём публичный адрес игры. */
+  var PUBLIC_BASE = 'https://alexsey111.github.io/fox-hunt-1990/';
+
+  function duelBase() {
+    var href = String(location.href);
+    if (href.indexOf('appassets.androidplatform.net') >= 0 || href.indexOf('file:') === 0) {
+      return PUBLIC_BASE;
+    }
+    return href.split('#')[0];
+  }
+
   function duelLink(seed, moves) {
-    var base = String(location.href).split('#')[0];
-    return base + '#seed=' + seed + (moves ? '&vs=' + moves : '');
+    return duelBase() + '#seed=' + seed + (moves ? '&vs=' + moves : '');
   }
 
   function copyText(text) {
@@ -2102,11 +2127,21 @@
     if (!g) return;
     var mine = duelMoves();
     var link = mine > 0 ? duelLink(g.seed, mine) : duelLink(g.seed);
-
-    shareLink.value = link;
-    shareNote.textContent = mine > 0
+    var note = mine > 0
       ? T('share.note.norm', { seed: String(g.seed).padStart(6, '0'), moves: movesWord(mine) })
       : T('share.note.none', { seed: String(g.seed).padStart(6, '0') });
+
+    /* На телефоне уместнее системное «Поделиться»: там сразу мессенджеры
+       и почта, а не копирование в буфер. */
+    if (window.AndroidApp && typeof window.AndroidApp.share === 'function') {
+      try {
+        window.AndroidApp.share(note + ' ' + link);
+        return;
+      } catch (err) { /* мост не ответил — показываем окно со ссылкой */ }
+    }
+
+    shareLink.value = link;
+    shareNote.textContent = note;
     openModal(shareModal, el('btn-copy'));
     shareLink.select();
 

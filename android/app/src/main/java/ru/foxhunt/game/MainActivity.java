@@ -5,8 +5,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.print.PrintAttributes;
+import android.print.PrintDocumentAdapter;
+import android.print.PrintManager;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
@@ -76,6 +80,10 @@ public class MainActivity extends Activity {
             }
         });
 
+        // Мост для того, что в браузере умеет само окно, а в WebView — только
+        // средствами системы: печать через диалог Android и «поделиться».
+        web.addJavascriptInterface(new Bridge(), "AndroidApp");
+
         setContentView(web);
         if (saved != null) {
             web.restoreState(saved);
@@ -106,5 +114,48 @@ public class MainActivity extends Activity {
             web = null;
         }
         super.onDestroy();
+    }
+
+    /** Методы, вызываемые из игры: AndroidApp.printPage(...), AndroidApp.share(...). */
+    private class Bridge {
+
+        @JavascriptInterface
+        public void printPage(final String title) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        String name = (title == null || title.isEmpty()) ? "Охота на лис" : title;
+                        PrintManager pm = (PrintManager) getSystemService(PRINT_SERVICE);
+                        PrintDocumentAdapter adapter = web.createPrintDocumentAdapter(name);
+                        pm.print(name, adapter, new PrintAttributes.Builder().build());
+                    } catch (Exception ignored) {
+                        // печать недоступна (нет службы печати) — игра продолжает работать
+                    }
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public void share(final String text) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Intent send = new Intent(Intent.ACTION_SEND);
+                        send.setType("text/plain");
+                        send.putExtra(Intent.EXTRA_TEXT, text);
+                        startActivity(Intent.createChooser(send, "Поделиться"));
+                    } catch (Exception ignored) {
+                        // нет чем делиться — молча остаёмся в игре
+                    }
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public String platform() {
+            return "android";
+        }
     }
 }
