@@ -112,6 +112,10 @@ jobs:
           TAG="${GITHUB_REF_NAME}"
           gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --title "$TAG" --notes "Сборка APK"
           gh release upload "$TAG" "out/oxota-na-lis-${APP_VERSION_NAME}.apk" --clobber
+          # Копия под постоянным именем: ссылка .../latest/download/oxota-na-lis.apk
+          # не меняется от версии к версии.
+          cp "out/oxota-na-lis-${APP_VERSION_NAME}.apk" out/oxota-na-lis.apk
+          gh release upload "$TAG" out/oxota-na-lis.apk --clobber
 
   # Проверка, что APK не просто собрался, а ставится и открывается:
   # эмулятор ставит его, запускает и делает снимок экрана.
