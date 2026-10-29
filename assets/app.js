@@ -729,7 +729,7 @@
 
   function linesOf(g, r, c) {
     var map = {};
-    g.lineCells(r, c).forEach(function (p) { map[p[0] + ':' + p[1]] = 1; });
+    g.heardCells(r, c).forEach(function (p) { map[p[0] + ':' + p[1]] = 1; });
     return map;
   }
 
@@ -1400,7 +1400,7 @@
       cell.classList.remove('line');
       cell.classList.remove('line-preview');
     });
-    state.game.lineCells(r, c).forEach(function (p) {
+    state.game.heardCells(r, c).forEach(function (p) {
       var cell = state.cells.get(key(p[0], p[1]));
       if (cell) cell.classList.add('line-preview');
     });
@@ -1417,7 +1417,7 @@
   function showLines(r, c) {
     state.cells.forEach(function (cell) { cell.classList.remove('line'); });
     if (!prefs.lines || !state.level || state.level.hints === 'none') return;
-    state.game.lineCells(r, c).forEach(function (p) {
+    state.game.heardCells(r, c).forEach(function (p) {
       var cell = state.cells.get(key(p[0], p[1]));
       if (cell) cell.classList.add('line');
     });

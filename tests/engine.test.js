@@ -201,6 +201,44 @@ test('режим rowcol: два числа, диагонали в ответ н�
   assert.equal(res.bearing, 2, 'на индикаторе — сумма, разбивка отдельно');
 });
 
+test('подсветка показывает ровно те клетки, которые слышит пеленгатор уровня', () => {
+  // Разведчик: в числе только строка и столбец — диагонали не подсвечиваются
+  const scout = new Game({ seed: 7, mode: 'rowcol' });
+  const cells = scout.heardCells(5, 5);
+  assert.equal(cells.length, 19, 'строка 10 + столбец 9, диагоналей нет');
+  for (const [r, c] of cells) assert.ok(r === 5 || c === 5, `клетка ${r}.${c} лежит только на диагонали`);
+
+  // классика и остальные режимы — все четыре луча, клетка считается один раз
+  const hunter = new Game({ seed: 7, mode: 'sum' });
+  assert.deepEqual(hunter.heardCells(5, 5), hunter.lineCells(5, 5));
+  assert.equal(hunter.heardCells(5, 5).length, 36);
+
+  // у «Ветерана» поле 12×12 — проверяем, что и там счёт совпадает с лучами
+  const veteran = new Game({ seed: 7, size: 12, foxes: 10, mode: 'sum' });
+  assert.equal(veteran.heardCells(6, 6).length, veteran.lineCells(6, 6).length);
+});
+
+test('число на индикаторе равно сумме лис на подсвеченных клетках', () => {
+  // Именно этого теста не хватало: числа проверялись отдельно от подсветки,
+  // и «Разведчик» подсвечивал диагонали, которых пеленг не слышит.
+  let checked = 0;
+  for (const lv of LEVELS) {
+    const g = new Game({ seed: 11, size: lv.size, foxes: lv.foxes, mode: lv.mode });
+    for (let r = 1; r <= g.size; r++) {
+      for (let c = 1; c <= g.size; c++) {
+        if (g.field[g.idx(r, c)] > 0) continue; // в занятой клетке лиса ловится, пеленга нет
+        const heard = g.heardCells(r, c);
+        const sum = heard.reduce((a, p) => a + g.field[g.idx(p[0], p[1])], 0);
+        const p = g.bearingParts(r, c);
+        const shown = lv.mode === 'rowcol' ? p.row + p.col : p.row + p.col + p.d1 + p.d2;
+        assert.equal(sum, shown, `${lv.id}: клетка ${r}.${c}`);
+        checked++;
+      }
+    }
+  }
+  assert.ok(checked > 500, `проверено клеток: ${checked}`);
+});
+
 test('режим binary: только «есть/нет», без количества', () => {
   const f = new Array(8 * 8).fill(0);
   f[(1 - 1) * 8 + (1 - 1)] = 1;

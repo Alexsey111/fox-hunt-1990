@@ -171,6 +171,21 @@
     return out;
   };
 
+  /* Клетки, которые пеленгатор этого уровня действительно слышит.
+     sum/rays/binary — все четыре луча, как в оригинале;
+     rowcol — только строка и столбец: диагонали в число не входят,
+     поэтому и подсвечивать их на экране нельзя (иначе витрина обещает
+     клетку, из которой ответа не будет). */
+  Game.prototype.heardCells = function (r, c) {
+    var cells = this.lineCells(r, c);
+    if (this.mode !== 'rowcol') return cells;
+    var out = [];
+    for (var i = 0; i < cells.length; i++) {
+      if (cells[i][0] === r || cells[i][1] === c) out.push(cells[i]);
+    }
+    return out;
+  };
+
   /* Пеленг по каждому лучу отдельно — для режимов rays/rowcol и подсказок. */
   Game.prototype.bearingParts = function (r, c) {
     var n = this.size, row = 0, col = 0, d1 = 0, d2 = 0, i;
