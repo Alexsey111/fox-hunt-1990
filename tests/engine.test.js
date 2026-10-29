@@ -190,7 +190,7 @@ test('режим rays: четыре числа по лучам, в сумме �
   assert.equal(res.parts.row + res.parts.col + res.parts.d1 + res.parts.d2, 4);
 });
 
-test('режим rowcol: два числа, диагонали в ответ не входят', () => {
+test('режим rowcol: два числа, диагонали не входят ни в ответ, ни в разбивку', () => {
   const f = emptyField();
   f[(4 - 1) * SIZE + (7 - 1)] = 1; // 4.7 — только строка
   f[(2 - 1) * SIZE + (1 - 1)] = 1; // 2.1 — только диагональ
@@ -198,7 +198,11 @@ test('режим rowcol: два числа, диагонали в ответ н�
   const res = g.probe(4, 3);
   assert.equal(res.type, 'bearing');
   assert.deepEqual(res.parts, { row: 1, col: 0, d1: 1, d2: 0 });
-  assert.equal(res.bearing, 2, 'на индикаторе — сумма, разбивка отдельно');
+  /* Число на индикаторе — это строка + столбец, а не сумма четырёх лучей:
+     иначе клетка с диагональной лисой печатала бы «2», хотя подпись и подсветка
+     говорят «строка 0 · столбец 0». */
+  assert.equal(res.bearing, 1, 'диагональная лиса в ответ не входит');
+  assert.equal(res.parts.d1, 1, 'но в разбивке диагональ всё же видна решателю');
 });
 
 test('подсветка показывает ровно те клетки, которые слышит пеленгатор уровня', () => {
@@ -232,6 +236,12 @@ test('число на индикаторе равно сумме лис на п�
         const p = g.bearingParts(r, c);
         const shown = lv.mode === 'rowcol' ? p.row + p.col : p.row + p.col + p.d1 + p.d2;
         assert.equal(sum, shown, `${lv.id}: клетка ${r}.${c}`);
+        /* И то же число обязан вернуть сам заход: именно его печатают клетка,
+           панель и журнал. */
+        const probe = new Game({ field: g.field.slice(), size: g.size, mode: lv.mode, foxes: lv.foxes });
+        const answer = probe.probe(r, c).bearing;
+        if (lv.mode === 'binary') assert.equal(answer, sum > 0 ? 1 : 0, `${lv.id}: ответ захода ${r}.${c}`);
+        else assert.equal(answer, shown, `${lv.id}: ответ захода ${r}.${c}`);
         checked++;
       }
     }

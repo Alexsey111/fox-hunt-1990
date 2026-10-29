@@ -330,9 +330,14 @@
     } else {
       var parts = this.bearingParts(r, c);
       var sum = parts.row + parts.col + parts.d1 + parts.d2;
+      /* Что печатается как ответ. На «Разведчике» диагонали не слышны: и число,
+         и разбивка — только строка и столбец. Раньше здесь всегда была сумма
+         четырёх лучей, и цифра в клетке противоречила подсветке и подписи. */
+      var shown = this.mode === 'rowcol' ? parts.row + parts.col
+        : (this.mode === 'binary' ? (sum > 0 ? 1 : 0) : sum);
       res = {
         type: 'bearing', r: r, c: c,
-        bearing: this.mode === 'binary' ? (sum > 0 ? 1 : 0) : sum,
+        bearing: shown,
         parts: parts,
         mode: this.mode,
         moves: this.moves
