@@ -164,7 +164,7 @@
       <div class="tools" id="tools">
         <label class="check"><input type="checkbox" id="opt-lines" checked><span data-i18n="opt.lines">Подсветка лучей</span></label>
         <label class="check"><input type="checkbox" id="opt-notes" checked><span data-i18n="opt.notes">Заметки</span></label>
-        <label class="check" data-i18n-title="opt.auto.title" title="«×» там, где лисы не может быть по логике пеленгов">
+        <label class="check" data-i18n-title="opt.auto.title" title="«×» там, где лисы не может быть по логике пеленгов. Партия с автопометками идёт вне рекорда.">
           <input type="checkbox" id="opt-auto"><span data-i18n="opt.auto">Автопометки</span></label>
       </div>
       <p class="legend" id="notes-legend" data-i18n="legend.notes">Правый клик (или долгое нажатие): «?» оранжевый — здесь может быть лиса, второй раз — «×» красный — здесь точно нет. Автопометки ставят «×» только там, где лисы не может быть по логике пеленгов.</p>
@@ -195,7 +195,7 @@
         <ol class="log" id="log" data-i18n-aria="aria.log" aria-label="Журнал ходов"></ol>
       </div>
 
-      <p class="panel-note"><span data-i18n="panel.rec">Рекорд уровня —</span> <b id="rec-moves">—</b> <span data-i18n="panel.par">· пар —</span> <b id="rec-par">—</b></p>
+      <p class="panel-note"><span data-i18n="panel.rec">Рекорд уровня —</span> <b id="rec-moves">—</b> <span data-i18n="panel.par">· пар —</span> <b id="rec-par">—</b> <span class="assist-badge" id="rec-assist" hidden data-i18n="panel.assist">вне рекорда</span></p>
       <p class="panel-note" id="stat-line">Партий: 0 · побед: 0</p>
       <button type="button" class="btn ghost wide" id="btn-daily" data-i18n="btn.daily">Задача дня</button>
       <p class="panel-note" id="daily-line"></p>
@@ -258,10 +258,11 @@
       <li data-i18n="rules.a2">Рекорды, статистика партий и сдач — отдельно по каждому уровню. Кнопка «Итоги» собирает всё в одну таблицу и выгружает в .csv или .json.</li>
       <li data-i18n="rules.a3">Задача дня: одна расстановка на всех, выведенная из даты. История задач дня — сыгранные дни и серия подряд; прошлый день можно переиграть (это не идёт в рекорды).</li>
       <li data-i18n="rules.a4">Отмена хода: кнопка «Отменить» или Ctrl+Z. Незаконченная партия продолжается после закрытия вкладки.</li>
-      <li data-i18n="rules.a5">Заметки двух видов: «?» — может быть, «×» — точно нет. Автопометки ставят «×» по логике пеленгов.</li>
+      <li data-i18n="rules.a5">Заметки двух видов: «?» оранжевый — может быть, «×» красный — точно нет. Автопометки ставят «×» по логике пеленгов и выводят партию из рекордов.</li>
       <li data-i18n="rules.a6">Подсказка и разбор партии: подсказка показывает клетку с наибольшей ожидаемой информацией, разбор — сколько бит принёс каждый ход.</li>
       <li data-i18n="rules.a7">Печатный бланк поля с ключом для ведущего и тренировка с уже запеленгованной позиции.</li>
       <li data-i18n="rules.a8">Журнал ходов, таймер, номер партии и тема «1990» с зелёным индикатором.</li>
+      <li data-i18n="rules.a10">Честная партия: рекорд и звёзды считаются только без помощников и по незнакомой расстановке. Подсказка, отмена хода, автопометки или повтор уже игранного номера партии помечают партию «вне рекорда» — рекорд уровня и задача дня остаются прежними, звёзд нет.</li>
       <li data-i18n="rules.a9">Английская версия интерфейса: кнопка EN/RU в шапке. Русский — по умолчанию,
         выбор запоминается, незаконченная партия при переключении не теряется.</li>
     </ul>

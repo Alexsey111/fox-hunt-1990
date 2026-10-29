@@ -90,7 +90,7 @@
   add('opt.lines', 'Подсветка лучей', 'Highlight rays');
   add('opt.notes', 'Заметки', 'Notes');
   add('opt.auto', 'Автопометки', 'Auto-marks');
-  add('opt.auto.title', '«×» там, где лисы не может быть по логике пеленгов',
+  add('opt.auto.title', '«×» там, где лисы не может быть по логике пеленгов. Партия с автопометками идёт вне рекорда',
     '“×” where no fox can be, judging by the bearings');
   add('legend.notes',
     'Правый клик (или долгое нажатие): «?» оранжевый — здесь может быть лиса, второй раз — «×» красный — здесь точно нет. Автопометки ставят «×» только там, где лисы не может быть по логике пеленгов.',
@@ -118,6 +118,8 @@
   add('aria.log', 'Журнал ходов', 'Move log');
   add('panel.rec', 'Рекорд уровня —', 'Level record —');
   add('panel.par', '· пар —', '· par —');
+  add('panel.assist', 'вне рекорда', 'out of records');
+  add('panel.assist.title', 'Партия вне рекорда: {what}', 'Out of records: {what}');
   add('btn.daily', 'Задача дня', 'Daily puzzle');
   add('btn.dailyHist', 'История задач дня', 'Daily puzzle history');
   add('btn.stats', 'Итоги: рекорды и статистика', 'Totals: records and stats');
@@ -181,7 +183,7 @@
   add('rules.a4',
     'Отмена хода: кнопка «Отменить» или Ctrl+Z. Незаконченная партия продолжается после закрытия вкладки.',
     'Undo: the “Undo” button or Ctrl+Z. An unfinished game resumes after the tab is closed.');
-  add('rules.a5', 'Заметки двух видов: «?» — может быть, «×» — точно нет. Автопометки ставят «×» по логике пеленгов.',
+  add('rules.a5', 'Заметки двух видов: «?» оранжевый — может быть, «×» красный — точно нет. Автопометки ставят «×» по логике пеленгов и выводят партию из рекордов.',
     'Two kinds of notes: “?” — may be, “×” — definitely not. Auto-marks place “×” by the logic of the bearings.');
   add('rules.a6',
     'Подсказка и разбор партии: подсказка показывает клетку с наибольшей ожидаемой информацией, разбор — сколько бит принёс каждый ход.',
@@ -518,12 +520,22 @@
   add('toast.over.undo', 'Партия окончена — отменять нечего', 'The game is over — nothing to undo');
   add('toast.undo.none', 'Отменять нечего: сделайте заход', 'Nothing to undo: take a bearing first');
   add('toast.undo.done', 'Заход отменён · ходов {moves}', 'The move is undone · {moves} played');
+  add('toast.assist.off',
+    'Партия идёт вне рекорда: рекорд и звёзды за неё не выдаются.',
+    'This game is out of the records: no record and no stars for it.');
+
+  /* почему партия не идёт в рекорд */
+  add('assist.hint', 'использована подсказка', 'a hint was used');
+  add('assist.undo', 'отменён ход', 'a move was undone');
+  add('assist.auto', 'включены автопометки', 'auto-marks were on');
+  add('assist.replay', 'эта расстановка уже игралась', 'this layout has been played before');
   add('toast.resume', 'Продолжаем партию: {moves}', 'Resuming the game: {moves}');
   add('toast.resume.training', ' · тренировка', ' · practice');
   add('toast.resume.daily', ' · задача дня {day}', ' · daily task {day}');
   add('toast.resume.fail', 'Сохранённую партию продолжить не удалось — начали новую',
     'The saved game could not be resumed — started a new one');
-  add('toast.replay.same', 'Та же расстановка — партия {seed}', 'Same layout — game {seed}');
+  add('toast.replay.same', 'Та же расстановка — партия {seed}. Она уже игралась, поэтому в рекорд не пойдёт.',
+    'Same layout — game {seed}. It has been played before, so it will not count as a record.');
   add('toast.replay.link', 'Партия по ссылке: {seed}', 'Game from the link: {seed}');
   add('toast.daily', 'Задача дня {day} · партия {seed}', 'Daily task {day} · game {seed}');
   add('toast.daily.archive', ' · в рекорды не пойдёт', ' · not counted as a record');
@@ -617,6 +629,10 @@
   /* ---------- победа и сдача ---------- */
 
   add('win.title.foxes', 'Все {foxes} найдены', 'All {foxes} found');
+  add('win.note.out',
+    'Партия не идёт в рекорд: {what}. Звёзды не выдаются, рекорд уровня и задача дня остаются прежними — рекорд считается только за партию без помощи и по новой расстановке.',
+    'This game does not count as a record: {what}. No stars; the level record and the daily task stay as they were — a record is a game without help on a layout you have not seen.');
+
   add('win.note.archive',
     'Задача дня {day} (переигровка): результат попал в историю дня, но не в рекорды уровня и не в статистику.',
     'Daily task {day} (replay): the result went into the daily history, not into the level records or the statistics.');
@@ -675,6 +691,9 @@
   add('note.repeat', 'повтор: клетка уже была', 'a repeat: this cell was played');
   add('note.nothing', 'почти ничего', 'almost nothing');
 
+  add('rules.a10',
+    'Честная партия: рекорд и звёзды считаются только без помощников и по незнакомой расстановке. Подсказка, отмена хода, автопометки или повтор уже игранного номера партии помечают партию «вне рекорда» — рекорд уровня и задача дня остаются прежними, звёзд нет.',
+    'A fair game: records and stars count only without helpers and on a layout you have not seen. A hint, an undone move, auto-marks or a replay of a game id you have already played mark the game “out of records” — the level record and the daily task stay as they were, and there are no stars.');
   add('rules.a9',
     'Английская версия интерфейса: кнопка EN/RU в шапке. Русский — по умолчанию, выбор запоминается, незаконченная партия при переключении не теряется.',
     'An English interface: the EN/RU button in the header. Russian is the default, the choice is remembered, and a game in progress survives the switch.');

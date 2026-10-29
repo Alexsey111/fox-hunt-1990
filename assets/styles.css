@@ -815,6 +815,21 @@ html[data-theme="retro"] .duel-line { border-radius: 0; color: var(--gold); }
 }
 
 .panel-note { margin: 0; font-size: 11.5px; color: var(--dim); }
+
+/* «вне рекорда»: партия шла с помощью или с знакомым номером партии */
+.assist-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 7px;
+  border: 1px solid rgba(255, 122, 61, .55);
+  border-radius: 99px;
+  color: var(--fox);
+  font-size: 10px;
+  letter-spacing: .02em;
+  vertical-align: 1px;
+}
+
+.assist-badge[hidden] { display: none; }
 .panel-note b { color: var(--muted); }
 
 .legend { margin: -4px 2px 2px; font-size: 11px; line-height: 1.5; color: var(--dim); }

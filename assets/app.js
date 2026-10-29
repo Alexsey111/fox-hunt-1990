@@ -69,6 +69,7 @@
   var shareNote = el('share-note');
   var recMoves = el('rec-moves');
   var recPar = el('rec-par');
+  var recAssist = el('rec-assist');
   var statLine = el('stat-line');
   var levelBar = el('level-bar');
   var variantBar = el('variant-bar');
@@ -184,6 +185,7 @@
       stats: {},   // id уровня → { plays, wins, forfeits }
       daily: null, // { date, moves, seed }
       dailyHistory: {}, // 'YYYY-MM-DD' → { moves, seed }
+      seen: {},         // ключ уровня → номера партий, которые уже играли
       session: null // незаконченная партия: { opts, probes, … }
     };
     var k;
@@ -239,6 +241,9 @@
     marks: new Map(),     // "r:c" → 'q' (может быть) | 'x' (точно нет)
     autoMarks: new Set(), // «×» от решателя: здесь лисы быть не может
     hint: null,           // {r, c, kind, bits, prob, text}
+    assist: { hint: 0, undo: 0 }, // помощь в партии: подсказка, отмена хода → вне рекорда
+    replay: false,        // эта расстановка уже игралась → партия вне рекорда
+    seedSeen: false,      // номер партии уже учтён в списке знакомых
     opts: null,           // опции, из которых собрана партия (нужны для отмены и продолжения)
     probes: [],           // [r, c] всех заходов: по ним партия восстанавливается
     baseMoves: 0,         // ходы, сделанные до игрока в тренировке
@@ -664,6 +669,7 @@
     if (!hint) { toast(T('toast.hint.none')); return; }
 
     state.hint = hint;
+    noteAssist('hint');
     renderAll();
 
     var coord = '<b>' + hint.r + '.' + hint.c + '</b>';
@@ -1560,12 +1566,85 @@
     statTime.textContent = fmtTime(state.elapsed);
   }
 
+  /* ---------- честная партия: помощь и повтор вне рекорда ---------- */
+
+  /* Рекорд — это партия, сыгранная без помощи и по незнакомой расстановке.
+     Подсказка, отмена хода, автопометки и повтор уже игранного номера партии
+     дают знание, которого у честного игрока нет: с ними «открыл всех за 8 ходов»
+     становится рекордом, который нельзя побить игрой. */
+
+  var SEEN_LIMIT = 300;   /* сколько номеров партий помнить на уровень */
+
+  function autoMarksOn() {
+    return !!(prefs.auto && state.level && state.level.marks && state.level.board);
+  }
+
+  function outReasons() {
+    var out = [];
+    if (state.assist.hint) out.push(T('assist.hint'));
+    if (state.assist.undo) out.push(T('assist.undo'));
+    if (autoMarksOn()) out.push(T('assist.auto'));
+    if (state.replay) out.push(T('assist.replay'));
+    return out;
+  }
+
+  function outOfRecords() { return outReasons().length > 0; }
+
+  /* Знакомые расстановки. Номер партии попадает в список на первом заходе —
+     значит «открыл и ушёл» тоже расходует расстановку, и второй раз она уже
+     не даёт рекорда. Память ограничена, чтобы prefs не росли бесконечно. */
+  /* Ключ расстановки — поле и число лис: «Новичок» и «Экстрим» играют одну и ту же
+     раскладку 8×8 из четырёх лис, разница только в ответе пеленгатора. Знание
+     раскладки переезжает между уровнями, поэтому и память общая. */
+  function layoutKey(lv) { return lv.size + 'x' + lv.foxes; }
+
+  function seedPlayed(key2, seed) {
+    var list = prefs.seen && prefs.seen[key2];
+    return !!(list && list.indexOf(seed) >= 0);
+  }
+
+  function rememberSeed(key2, seed) {
+    if (!prefs.seen) prefs.seen = {};
+    var list = prefs.seen[key2] || [];
+    if (list.indexOf(seed) < 0) list.push(seed);
+    if (list.length > SEEN_LIMIT) list = list.slice(list.length - SEEN_LIMIT);
+    prefs.seen[key2] = list;
+  }
+
+  function markSeedSeen() {
+    if (state.seedSeen || !state.game || !state.level) return;
+    if (state.mode === 'training') { state.seedSeen = true; return; }
+    var key2 = layoutKey(state.level);
+    state.replay = seedPlayed(key2, state.game.seed);
+    rememberSeed(key2, state.game.seed);
+    state.seedSeen = true;
+    updateRecordLine();
+  }
+
+  function noteAssist(kind) {
+    var was = outOfRecords();
+    state.assist[kind] += 1;
+    updateRecordLine();
+    saveSession();
+    if (!was && !wasQuiet()) toast(T('toast.assist.off'));
+  }
+
+  /* В тренировке, переигровке прошлого дня и на уровне без поля рекорд не пишется
+     и так, поэтому лишний тост там только мешает. */
+  function wasQuiet() {
+    return state.mode === 'training' || archiveDaily() || !state.level || !state.level.board;
+  }
+
   function updateRecordLine() {
     var lv = state.level;
     var key2 = recKey(lv);
     var best = prefs.best[key2];
     recMoves.textContent = best ? movesWord(best.moves) : '—';
     recPar.textContent = lv.stars ? movesWord(lv.stars[0]) : (lv.chase ? levelNote(lv) : '—');
+
+    var out = outOfRecords() && !wasQuiet();
+    recAssist.hidden = !out;
+    if (out) recAssist.title = T('panel.assist.title', { what: outReasons().join(', ') });
 
     var st = levelStats(key2);
     var txt = T('statline', { plays: st.plays, wins: st.wins });
@@ -1914,6 +1993,7 @@
       startTimer();
     }
 
+    markSeedSeen();
     state.results.set(key(r, c), res);
     state.stale.delete(key(r, c));
     state.trail = null;   /* след живёт ровно один заход */
@@ -2282,6 +2362,9 @@
     state.stale.clear();
     state.trail = null;
     state.hint = null;
+    state.assist = { hint: 0, undo: 0 };
+    state.replay = false;
+    state.seedSeen = false;
     state.baseMoves = 0;
     state.lastKey = null;
     state.startedAt = 0;
@@ -2369,6 +2452,7 @@
 
     syncFromLog();
     tick();
+    noteAssist('undo');
     updateStats();
     updateDuelLine();
     saveSession();
@@ -2394,6 +2478,9 @@
       baseMoves: state.baseMoves,
       opts: state.opts,
       probes: state.probes,
+      assist: { hint: state.assist.hint, undo: state.assist.undo },
+      replay: !!state.replay,
+      seedSeen: !!state.seedSeen,
       elapsed: state.elapsed,
       savedAt: Date.now()
     };
@@ -2432,12 +2519,22 @@
     state.mode = s.mode === 'daily' || s.mode === 'training' ? s.mode : 'free';
 
     startGame(lv, s.opts, s.probes, true);
+    if (s.assist) {
+      /* Помощь переживает перезапуск страницы: иначе «отменил, закрыл вкладку,
+         продолжил» стирало бы отметку и партия снова шла бы в рекорд. */
+      state.assist = { hint: Number(s.assist.hint) || 0, undo: Number(s.assist.undo) || 0 };
+    }
+    state.replay = !!s.replay;
+    state.seedSeen = !!s.seedSeen;
     state.baseMoves = s.baseMoves || 0;
     if (state.mode === 'daily' && s.day) state.dailyDate = s.day;
     state.timeBase = s.elapsed || 0;
     state.elapsed = state.timeBase;
     tick();
     updateStats();
+    /* Значок «вне рекорда» и строка рекорда зависят от помощи, а она пришла
+       из сессии уже после startGame — перерисовываем строку ещё раз. */
+    updateRecordLine();
     updateUndoBtn();
     updateDuelLine();
     saveSession();
@@ -2453,7 +2550,11 @@
     tick();
     boardWrap.classList.add('is-over');
 
-    var stars = starsFor(lv, movesShown());
+    /* Помощь и знакомый номер партии дают знание, которого у честной игры нет:
+       звёзд за такую партию не выдаём, рекорд не пишем. Статистика партий и
+       побед считается как обычно — партия состоялась. */
+    var out = outOfRecords();
+    var stars = out ? null : starsFor(lv, movesShown());
     var isRecord = false;
 
     if (!training) {
@@ -2464,7 +2565,7 @@
         prefs.stats[key2] = st;
 
         var prev = prefs.best[key2];
-        isRecord = !prev || movesShown() < prev.moves;
+        isRecord = !out && (!prev || movesShown() < prev.moves);
         if (isRecord) {
           prefs.best[key2] = {
             moves: movesShown(), time: state.elapsed, seed: g.seed,
@@ -2472,7 +2573,7 @@
           };
         }
       }
-      if (state.mode === 'daily') {
+      if (state.mode === 'daily' && !out) {
         recordDaily(movesShown(), g.seed, state.dailyDate || todayKey());
       }
       savePrefs();
@@ -2548,9 +2649,11 @@
       starsEl.setAttribute('aria-label', T('stars.rating', { stars: stars }));
     }
 
-    var note = winNote(isRecord, best, lv, movesShown());
-    if (state.mode === 'daily' && !archiveDaily()) note = T('win.note.daily', { day: todayKey() }) + note;
-    if (duelActive()) {
+    var out = outOfRecords();
+    var note = out ? T('win.note.out', { what: outReasons().join(', ') })
+      : winNote(isRecord, best, lv, movesShown());
+    if (!out && state.mode === 'daily' && !archiveDaily()) note = T('win.note.daily', { day: todayKey() }) + note;
+    if (!out && duelActive()) {
       var mine = movesShown(), vs = state.duel.vs;
       note += mine < vs ? T('win.note.duel.win', { vs: vs, mine: mine })
         : (mine === vs ? T('win.note.duel.draw', { vs: vs })
@@ -2818,6 +2921,8 @@
     prefs.auto = optAuto.checked;
     savePrefs();
     refreshAuto();
+    updateRecordLine();
+    if (prefs.auto && outOfRecords() && !wasQuiet()) toast(T('toast.assist.off'));
   });
 
   document.addEventListener('keydown', function (e) {
