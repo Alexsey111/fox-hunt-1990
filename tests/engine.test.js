@@ -284,3 +284,25 @@ test('уровень воспроизводится по сиду, как и к�
   assert.deepEqual(a.field, b.field);
   assert.equal(a.mode, 'binary');
 });
+
+test('уровни заданы целиком: поле, лисы, пороги, режим', () => {
+  const ids = new Set();
+  for (const lv of LEVELS) {
+    assert.ok(!ids.has(lv.id), `повтор id: ${lv.id}`);
+    ids.add(lv.id);
+    assert.ok(lv.size >= 6 && lv.size <= 16, `${lv.id}: поле ${lv.size}`);
+    assert.ok(lv.foxes >= 1 && lv.foxes <= lv.size * lv.size / 4, `${lv.id}: лис ${lv.foxes}`);
+    assert.ok(MODES.includes(lv.mode), `${lv.id}: режим ${lv.mode}`);
+    assert.ok(['hover', 'after', 'none'].includes(lv.hints), `${lv.id}: подсказки ${lv.hints}`);
+    assert.equal(typeof lv.board, 'boolean', `${lv.id}: board`);
+    assert.equal(typeof lv.marks, 'boolean', `${lv.id}: marks`);
+    assert.ok(lv.stars[0] < lv.stars[1], `${lv.id}: пороги ${lv.stars}`);
+    assert.ok(lv.note && lv.note.length > 0, `${lv.id}: пустое пояснение`);
+  }
+  // «Слепой» — поле видно, лучей нет: игрок не чертит поле на бумаге
+  const blind = levelById('blind');
+  assert.equal(blind.board, true, 'поле должно быть видимым');
+  assert.equal(blind.hints, 'none', 'подсветки лучей быть не должно');
+  // «МК-61» — единственное место, где поля нет вовсе (это вариант, а не уровень)
+  assert.equal(LEVELS.filter((lv) => !lv.board).length, 0);
+});

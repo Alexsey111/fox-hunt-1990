@@ -49,6 +49,7 @@
   var boardWrap = document.querySelector('.board-wrap');
   var panelEl = document.querySelector('.panel');
   var lcdBox = el('lcd');
+  var lcdLabel = el('lcd-label');
   var lcdValue = el('lcd-value');
   var lcdNote = el('lcd-note');
   var statFound = el('stat-found');
@@ -86,6 +87,7 @@
   var toolsBox = el('tools');
   var dailyLine = el('daily-line');
   var notesLegend = el('notes-legend');
+  var radarLegend = el('radar-legend');
   var footLevel = el('foot-level');
   var btnSound = el('btn-sound');
   var btnGiveUp = el('btn-giveup');
@@ -517,6 +519,9 @@
     toolsBox.hidden = calc;
     panelEl.classList.toggle('is-calc', calc);
     notesLegend.hidden = calc || !lv.marks;
+    radarLegend.hidden = calc || lv.mode !== 'binary';
+    /* В режиме радара на панели не «пеленг», а «радар»: число лис он не называет. */
+    lcdLabel.textContent = T(lv.mode === 'binary' ? 'lcd.radar' : 'lcd.bearing');
     coordForm.hidden = calc;
 
     var lines = lv.hints !== 'none' && !calc;
@@ -525,8 +530,11 @@
 
     optNotes.disabled = (!lv.marks && lv.board) || calc;
     optNotes.checked = lv.marks && prefs.notes !== false && !calc;
-    optAuto.disabled = !lv.board || calc;
-    el('btn-hint').disabled = !lv.board || calc;
+    /* На уровне без подсветки лучей («Слепой») подсказка и автопометки выключены:
+       иначе решатель делает всю дедукцию за игрока, и уровень теряет смысл. */
+    var noHelpers = lv.hints === 'none';
+    optAuto.disabled = !lv.board || noHelpers || calc;
+    el('btn-hint').disabled = !lv.board || noHelpers || calc;
     el('btn-train').disabled = chase || calc;
     el('btn-train').title = chase ? T('train.no.chase') : (calc ? T('train.no.calc') : '');
 
@@ -541,6 +549,8 @@
       hint.innerHTML = T('hint.blind');
     } else if (chase) {
       hint.innerHTML = T('hint.chase');
+    } else if (lv.mode === 'binary') {
+      hint.innerHTML = T('hint.radar');
     } else if (lv.hints === 'after') {
       hint.innerHTML = T('hint.after');
     } else {
@@ -1456,13 +1466,23 @@
     if (mk) mk.textContent = mark === 'x' ? '×' : (mark === 'q' ? '?' : (auto ? '×' : ''));
 
     if (res && res.bearing != null) {
-      v.textContent = String(res.bearing);
       cell.classList.add('has-val');
-      cell.dataset.n = String(Math.min(res.bearing, 5));
+      if (res.mode === 'binary') {
+        /* «Радар»: значок вместо числа. «1» читалось как «одна лиса»,
+           хотя ответ значит только «на лучах кто-то есть». */
+        v.textContent = res.bearing ? '●' : '○';
+        cell.dataset.radar = res.bearing ? '1' : '0';
+        delete cell.dataset.n;
+      } else {
+        v.textContent = String(res.bearing);
+        cell.dataset.n = String(Math.min(res.bearing, 5));
+        delete cell.dataset.radar;
+      }
     } else {
       v.textContent = '';
       cell.classList.remove('has-val');
       delete cell.dataset.n;
+      delete cell.dataset.radar;
     }
 
     var revealed = cell.classList.contains('revealed');
@@ -1473,7 +1493,9 @@
     } else {
       if (!revealed) cnt.textContent = '';
       cell.setAttribute('aria-label', res && res.bearing != null
-        ? T('cell.aria.bearing', { row: r, col: c, bearing: res.bearing })
+        ? (res.mode === 'binary'
+          ? T(res.bearing ? 'cell.aria.radar.on' : 'cell.aria.radar.off', { row: r, col: c })
+          : T('cell.aria.bearing', { row: r, col: c, bearing: res.bearing }))
         : T('cell.aria', { row: r, col: c }));
     }
 
@@ -1912,7 +1934,7 @@
       sfx.fox();
     } else {
       var value = res.mode === 'binary'
-        ? T(res.bearing ? 'calc.yes' : 'calc.no')
+        ? T(res.bearing ? 'bin.yes' : 'bin.no')
         : String(res.bearing);
       setLCD(value, bearingNote(res), false);
       sfx.probe();

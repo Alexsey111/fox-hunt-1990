@@ -93,8 +93,12 @@
   add('opt.auto.title', '«×» там, где лисы не может быть по логике пеленгов',
     '“×” where no fox can be, judging by the bearings');
   add('legend.notes',
-    'Правый клик (или долгое нажатие): «?» — здесь может быть лиса, второй раз — «×» — здесь точно нет. Автопометки ставят «×» только там, где лисы не может быть по логике пеленгов.',
-    'Right click (or a long press): “?” — a fox may be here, again — “×” — no fox here. Auto-marks put “×” only where the bearings rule a fox out.');
+    'Правый клик (или долгое нажатие): «?» оранжевый — здесь может быть лиса, второй раз — «×» красный — здесь точно нет. Автопометки ставят «×» только там, где лисы не может быть по логике пеленгов.',
+    'Right click (or a long press): an orange “?” — a fox may be here, again — a red “×” — no fox here. Auto-marks put “×” only where the bearings rule a fox out.');
+
+  add('legend.radar',
+    'Радар отвечает значком, а не числом: «●» — на лучах есть лиса, «○» — на лучах пусто. Сколько именно лис — радар не сообщает.',
+    'The radar answers with a symbol, not a number: “●” — a fox is on the rays, “○” — the rays are clear. It never says how many.');
 
   add('btn.hint', 'Подсказка', 'Hint');
   add('btn.review', 'Разбор', 'Review');
@@ -159,10 +163,10 @@
     '<b>Hunter</b> (10 × 10) — the 1990 original: one number, the sum over four rays.');
   add('rules.l4', '<b>Ветеран</b> (12 × 12, 10 лис) — лучи подсвечиваются только после хода, заметок нет.',
     '<b>Veteran</b> (12 × 12, 10 foxes) — rays light up only after the move, no notes.');
-  add('rules.l5', '<b>Слепой</b> — поля нет вовсе: индикатор, журнал и ввод координат, как на МК-61.',
-    '<b>Blind</b> — no board at all: the indicator, the log and coordinate input, as on the MK-61.');
-  add('rules.l6', '<b>Экстрим</b> (8 × 8, 4 лисы) — радар отвечает «есть лиса на лучах» или «чисто», без количества.',
-    '<b>Extreme</b> (8 × 8, 4 foxes) — the radar answers “fox on the rays” or “clear”, without a count.');
+  add('rules.l5', '<b>Слепой</b> (10 × 10) — поле видно, но лучи не подсвечиваются: считать приходится самому, зато не нужно чертить поле на листке. Вариант «без поля вовсе» — режим МК-61.',
+    '<b>Blind</b> (10 × 10) — the board is visible but the rays never light up: you keep track yourself, yet you need no paper board. The “no board at all” variant is the MK-61 mode.');
+  add('rules.l6', '<b>Экстрим</b> (8 × 8, 4 лисы) — радар: «●» есть лиса на лучах, «○» пусто. Количества нет вовсе, поэтому «1» здесь не значит «одна лиса» — цифр в этом режиме нет.',
+    '<b>Extreme</b> (8 × 8, 4 foxes) — radar: “●” a fox is on the rays, “○” clear. There is no count at all, so “1” would mean nothing — this mode shows no digits.');
 
   add('rules.h.added', 'Что добавлено в этой версии', 'Added in this version');
   add('rules.a1',
@@ -346,9 +350,9 @@
   add('level.veteran.title', 'Ветеран', 'Veteran');
   add('level.veteran.note', '12×12, подсветка только после хода', '12×12, rays light up only after the move');
   add('level.blind.title', 'Слепой', 'Blind');
-  add('level.blind.note', 'без поля, как на МК-61', 'no board, like the MK-61');
+  add('level.blind.note', 'поле есть, подсветки лучей нет', 'board on, no ray highlight');
   add('level.extreme.title', 'Экстрим', 'Extreme');
-  add('level.extreme.note', 'радар: есть лиса на лучах или нет', 'radar: a fox on the rays or not');
+  add('level.extreme.note', 'радар: «●» есть, «○» чисто, без числа', 'radar: “●” yes, “○” clear, no count');
   add('mode.chase', 'Гон', 'Chase');
   add('mode.mk61', 'МК-61', 'MK-61');
   add('mk61.note', 'калькулятор: индикатор и клавиши', 'calculator: indicator and keys');
@@ -382,6 +386,7 @@
 
   /* ---------- пеленг, журнал, индикатор ---------- */
 
+  add('lcd.radar', 'РАДАР', 'RADAR');
   add('lcd.binary.fox', 'на лучах есть лиса', 'a fox is on the rays');
   add('lcd.binary.clear', 'на лучах чисто', 'the rays are clear');
   add('lcd.rays', 'строка {row} · столбец {col} · ╲ {d1} · ╱ {d2}', 'row {row} · column {col} · ╲ {d1} · ╱ {d2}');
@@ -396,6 +401,9 @@
   add('lcd.fox.note.one', 'поймана одна, осталось {left} из {total}', 'one caught, {left} of {total} left');
   add('lcd.first.hint', 'введите координаты вида 4.3', 'enter coordinates like 4.3');
   add('lcd.first.hint.binary', 'радар: введите координаты вида 4.3', 'radar: enter coordinates like 4.3');
+  add('hint.radar',
+    'Радар: клик по клетке — один заход. Ответ — «●» есть лиса на лучах или «○» пусто; числа лис он не называет. <span class="hint-extra">Лучи подсвечиваются только после хода.</span>',
+    'Radar: a click is one call. The answer is “●” (a fox is on the rays) or “○” (clear); it never gives a number. <span class="hint-extra">Rays light up only after the move.</span>');
   add('lcd.hint.fox', 'похоже, лиса в {cell}', 'looks like a fox is in {cell}');
   add('lcd.ready', '—', '—');
 
@@ -412,6 +420,10 @@
     'Row {row}, column {col}: foxes caught — {found}');
   add('cell.aria.bearing', 'Строка {row}, столбец {col}: пеленг {bearing}',
     'Row {row}, column {col}: bearing {bearing}');
+  add('cell.aria.radar.on', 'Строка {row}, столбец {col}: радар — есть лиса на лучах',
+    'Row {row}, column {col}: radar — a fox is on the rays');
+  add('cell.aria.radar.off', 'Строка {row}, столбец {col}: радар — на лучах пусто',
+    'Row {row}, column {col}: radar — the rays are clear');
 
   add('coord.bad', 'Введите координаты вида 4.3 — строка и столбец через точку',
     'Enter coordinates like 4.3 — row and column with a dot');
@@ -571,6 +583,8 @@
 
   add('calc.yes', 'ЕСТЬ', 'YES');
   add('calc.no', 'НЕТ', 'NO');
+  add('bin.yes', 'ЕСТЬ', 'FOX');
+  add('bin.no', 'ЧИСТО', 'CLEAR');
   add('lcd.moveNote', 'ход {moves} · {note}', 'move {moves} · {note}');
   add('print.meta', 'Поле {size} × {size} · {foxes} · партия {seed}',
     'Board {size} × {size} · {foxes} · game {seed}');

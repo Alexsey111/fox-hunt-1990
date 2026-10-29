@@ -4,7 +4,7 @@
   "private": true,
   "description": "Охота на лис — игра из «Науки и жизни» № 10, 1990, в современной оболочке",
   "scripts": {
-    "test": "node --test tests/engine.test.js tests/solver.test.js tests/chase.test.js",
+    "test": "node --test tests/engine.test.js tests/solver.test.js tests/chase.test.js tests/i18n.test.js",
     "start": "electron .",
     "desktop": "electron .",
     "smoke": "electron . --smoke",

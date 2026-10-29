@@ -17,6 +17,8 @@
   --sig: #5ad1c8;
   --sig-soft: rgba(90, 209, 200, .12);
   --gold: #ffc46b;
+  --mark-q: #ff9a3c;
+  --mark-x: #ff4d4d;
   --radius: 14px;
   --ui: "Segoe UI Variable Text", "Segoe UI", -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
   --mono: "Cascadia Mono", "JetBrains Mono", ui-monospace, "SF Mono", Consolas, monospace;
@@ -549,13 +551,26 @@ html[data-theme="retro"] .duel-line { border-radius: 0; color: var(--gold); }
   top: 2px;
   left: 4px;
   font: 700 10px/1 var(--mono);
-  color: var(--gold);
+  color: var(--mark-q);
   opacity: 0;
   transition: opacity .15s;
 }
 
 .cell.marked .mk { opacity: .95; }
-.cell.marked-x .mk { color: #ff8f7a; font-size: 11px; }
+.cell.marked-x .mk { color: var(--mark-x); font-size: 11px; }
+
+/* Режим «радар»: в клетке не число, а значок — есть лиса на лучах или чисто.
+   Числа в этом режиме не печатаются вовсе, иначе «1» читается как «одна лиса». */
+.cell[data-radar="1"] .v {
+  color: var(--sig);
+  font: 700 clamp(13px, 1.3vw + 6px, 19px)/1 var(--mono);
+  text-shadow: 0 0 12px rgba(90, 209, 200, .55);
+}
+
+.cell[data-radar="0"] .v {
+  color: var(--dim);
+  font: 500 clamp(10px, 1vw + 5px, 14px)/1 var(--mono);
+}
 
 .cell.is-last {
   border-color: var(--fox);
@@ -1087,6 +1102,8 @@ html[data-theme="retro"] {
   --sig: #8bff9e;
   --sig-soft: rgba(139, 255, 158, .11);
   --gold: #e4dd62;
+  --mark-q: #ffc46b;
+  --mark-x: #ff6b5a;
   --radius: 2px;
   --ui: "Courier New", Courier, ui-monospace, monospace;
   --mono: "Courier New", Courier, ui-monospace, monospace;

@@ -48,8 +48,8 @@
     },
     {
       id: 'blind', title: 'Слепой', size: 10, foxes: 8, mode: 'sum',
-      hints: 'none', marks: false, board: false, stars: [21, 25],
-      note: 'без поля, как на МК-61'
+      hints: 'none', marks: true, board: true, stars: [20, 25],
+      note: 'поле без подсветки лучей'
     },
     {
       id: 'extreme', title: 'Экстрим', size: 8, foxes: 4, mode: 'binary',
