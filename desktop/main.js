@@ -22,6 +22,17 @@ const SMOKE_OUT = (function () {
   return i >= 0 && argv[i + 1] ? argv[i + 1] : path.join(app.getPath('temp'), 'fox-smoke.png');
 })();
 
+/* Самопроверка не должна зависеть от профиля игрока. В userData лежат уровень,
+   статистика и незакрытая партия: у владельца, игравшего «Новичка» 8×8, клетки
+   4.9 на поле нет — три клика дают два хода, и проверка падает на ровном месте.
+   Поэтому --selftest идёт в чистой папке, а не в пользовательской. */
+const SELFTEST_DIR = SELFTEST ? path.join(app.getPath('temp'), 'fox-selftest-' + process.pid) : null;
+if (SELFTEST_DIR) {
+  fs.rmSync(SELFTEST_DIR, { recursive: true, force: true });
+  fs.mkdirSync(SELFTEST_DIR, { recursive: true });
+  app.setPath('userData', SELFTEST_DIR);
+}
+
 /* Самопроверка собранного приложения: сценарий проходит по экранам и отдаёт
    числа, а решение «похоже на правду» принимает main-процесс, а не страница. */
 const SELFTEST_SCRIPT = `(async () => {
@@ -320,5 +331,12 @@ if (!SMOKE && !app.requestSingleInstanceLock()) {
 
   app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') app.quit();
+  });
+
+  /* Чистая папка самопроверки больше не нужна. Если Windows не отдаёт файл
+     сразу — не беда: каталог лежит во временной папке и не мешает игре. */
+  app.on('will-quit', function () {
+    if (!SELFTEST_DIR) return;
+    try { fs.rmSync(SELFTEST_DIR, { recursive: true, force: true }); } catch (e) {}
   });
 }

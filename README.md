@@ -16,8 +16,8 @@
 - Сборка для хостинга вручную: папка `dist-web/` (`npm run web`), см. раздел
   «Веб-версия и установка на телефон (PWA)».
 - Windows: установщик и portable — https://github.com/Alexsey111/fox-hunt-1990/releases
-- Android: APK там же, в последнем релизе (`oxota-na-lis-<версия>.apk`); публикация
-  в RuStore готовится, материалы — в `ru-store/`.
+- Android: APK там же, в последнем релизе (`oxota-na-lis-<версия>.apk`); в RuStore —
+  https://www.rustore.ru/catalog/app/ru.foxhunt.game (материалы карточки — в `ru-store/`).
 - Политика конфиденциальности: https://alexsey111.github.io/fox-hunt-1990/privacy.html
   (и её копия на зеркале: https://fox-hunt.netlify.app/privacy.html)
 
@@ -593,8 +593,8 @@ desktop/icon.png      иконка приложения (512 × 512)
 
 ### Android-версия и RuStore
 
-Оболочка лежит в `android/` (одна Activity, WebView, разрешение только INTERNET), собирается
-в GitHub Actions: workflow `android` → Run workflow. Подпись берётся из секретов
+Оболочка лежит в `android/` (одна Activity, WebView; начиная с 1.0.8 — без единого
+разрешения), собирается в GitHub Actions: workflow `android` → Run workflow. Подпись берётся из секретов
 `ANDROID_KEYSTORE_BASE64` и `ANDROID_KEYSTORE_PASSWORD`; собранный APK кладётся артефактом
 и, если прогон запущен по тегу, прикрепляется к релизу.
 

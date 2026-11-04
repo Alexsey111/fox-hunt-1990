@@ -15,11 +15,11 @@
      битых ссылок в интерфейсе не бывает. */
   /* Внимание: у установщика есть «постоянное» имя без версии (oxota-na-lis-setup.exe) —
      оно перезаливается в каждый релиз, поэтому ссылка не ломается при смене версии.
-     Адреса с номером версии (…-1.0.7.exe) годятся только для конкретного релиза. */
+     Адреса с номером версии (…-1.0.8.exe) годятся только для конкретного релиза. */
   var LINKS = {
     web: 'https://alexsey111.github.io/fox-hunt-1990/',        /* своя страница веб-версии */
     win: 'https://github.com/Alexsey111/fox-hunt-1990/releases/latest/download/oxota-na-lis-setup.exe',
-    rustore: '',  /* https://www.rustore.ru/catalog/app/ru.foxhunt.game — после публикации */
+    rustore: 'https://www.rustore.ru/catalog/app/ru.foxhunt.game',  /* карточка в RuStore */
     donate: 'https://yoomoney.ru/to/4100119669666956'          /* визитка ЮMoney для переводов */
   };
 
