@@ -1,0 +1,52 @@
+D/AndroidRuntime(  287): >>>>>> START com.android.internal.os.ZygoteInit uid 0 <<<<<<
+I/AndroidRuntime(  287): Using default boot image
+I/AndroidRuntime(  287): Leaving lock profiling enabled
+D/AndroidRuntime(  288): >>>>>> START com.android.internal.os.ZygoteInit uid 0 <<<<<<
+I/AndroidRuntime(  288): Using default boot image
+I/AndroidRuntime(  288): Leaving lock profiling enabled
+I/AndroidRuntime(  855): VM exiting with result code 0, cleanup skipped.
+I/AndroidRuntime(  861): VM exiting with result code 0, cleanup skipped.
+D/AndroidRuntime( 1767): >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+I/AndroidRuntime( 1767): Using default boot image
+I/AndroidRuntime( 1767): Leaving lock profiling enabled
+D/AndroidRuntime( 1767): Calling main entry com.android.commands.input.Input
+D/AndroidRuntime( 1767): Shutting down VM
+I/ActivityManager(  496): Start proc 2626:com.google.android.webview:webview_service/u0a144 for service {com.google.android.webview/org.chromium.android_webview.services.VariationsSeedServer}
+I/PackageDexOptimizer(  496): Running dexopt (dexoptNeeded=1) on: /data/app/~~vsgrdyqAEpG8rcTKLAro7w==/ru.foxhunt.game-jNG8Z-iMlQJrsNBrm7Imug==/base.apk pkg=ru.foxhunt.game isa=x86_64 dexoptFlags=boot_complete,profile_guided,public,enable_hidden_api_checks targetFilter=speed-profile oatDir=/data/app/~~vsgrdyqAEpG8rcTKLAro7w==/ru.foxhunt.game-jNG8Z-iMlQJrsNBrm7Imug==/oat classLoaderContext=PCL[]{}
+V/installd(  426): DexInv: --- BEGIN '/data/app/~~vsgrdyqAEpG8rcTKLAro7w==/ru.foxhunt.game-jNG8Z-iMlQJrsNBrm7Imug==/base.apk' ---
+I/dex2oat32( 2990): /apex/com.android.art/bin/dex2oat32 --input-vdex-fd=-1 --output-vdex-fd=9 --updatable-bcp-packages-file=/system/etc/updatable-bcp-packages.txt --resolve-startup-const-strings=true --max-image-block-size=524288 --compiler-filter=speed-profile --classpath-dir=/data/app/~~vsgrdyqAEpG8rcTKLAro7w==/ru.foxhunt.game-jNG8Z-iMlQJrsNBrm7Imug== --class-loader-context=PCL[]{} --generate-mini-debug-info --compact-dex-level=none --compilation-reason=install
+V/installd(  426): DexInv: --- END '/data/app/~~vsgrdyqAEpG8rcTKLAro7w==/ru.foxhunt.game-jNG8Z-iMlQJrsNBrm7Imug==/base.apk' (success) ---
+V/BackupManagerService(  496): [UserID:0] restoreAtInstall pkg=ru.foxhunt.game token=1 restoreSet=0
+I/MediaProvider( 1735): Invalidating LocalCallingIdentity cache for package ru.foxhunt.game. Reason: package android.intent.action.PACKAGE_ADDED
+I/GsaVoiceInteractionSrv( 1439): O received Intent { act=android.intent.action.PACKAGE_ADDED dat=package:ru.foxhunt.game flg=0x4000010 (has extras) }
+D/AvrcpMediaPlayerList(  696): Name of package changed: ru.foxhunt.game
+W/GCM     ( 1149): Unexpected forwarded intent: Intent { act=android.intent.action.PACKAGE_ADDED dat=package:ru.foxhunt.game flg=0x4000010 cmp=com.google.android.gms/.chimera.PersistentIntentOperationService (has extras) }
+W/GCM     ( 1149): Unexpected forwarded intent: Intent { act=android.intent.action.PACKAGE_ADDED dat=package:ru.foxhunt.game flg=0x4000010 cmp=com.google.android.gms/.chimera.PersistentIntentOperationService (has extras) }
+I/ActivityTaskManager(  496): START u0 {flg=0x10000000 cmp=ru.foxhunt.game/.MainActivity} from uid 2000
+I/ChromeSync( 1679): [Sync,SyncIntentOperation] Handling the intent: Intent { act=android.intent.action.PACKAGE_ADDED dat=package:ru.foxhunt.game flg=0x4000010 cmp=com.google.android.gms/.chimera.GmsIntentOperationService (has extras) }.
+I/FontsPackageChangeOp( 1679): Package ru.foxhunt.game has no metadata
+I/ActivityManager(  496): Start proc 3366:ru.foxhunt.game/u0a167 for pre-top-activity {ru.foxhunt.game/ru.foxhunt.game.MainActivity}
+I/ChromeSync( 1679): [Persistence,AffiliationManager] One of affiliation or grouping data for android://X-P28OG_XWF1v9dGMuHvkWkhC373s0hNeZe4TSDAkJBahUkLWQ67tl7Lgkglebbmk6S7MYT2MYm5Y8R4t7fJeQ==@ru.foxhunt.game/ was not found. Marking affiliation data as stale...
+W/ru.foxhunt.gam( 3366): Unexpected CPU variant for X86 using defaults: x86_64
+I/ru.foxhunt.gam( 3366): The ClassLoaderContext is a special shared library.
+I/ru.foxhunt.gam( 3366): The ClassLoaderContext is a special shared library.
+I/ActivityManager(  496): Start proc 3417:com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0/u0ai9000 for  {ru.foxhunt.game/org.chromium.content.app.SandboxedProcessService0:0}
+E/chromium( 3366): [ERROR:filesystem_posix.cc(62)] mkdir /data/user/0/ru.foxhunt.game/cache/WebView/Crashpad: No such file or directory (2)
+I/TetheringManager( 3366): registerTetheringEventCallback:ru.foxhunt.game
+W/chromium( 3366): [WARNING:dns_config_service_posix.cc(341)] Failed to read DnsConfig.
+I/chromium( 3366): [INFO:CONSOLE(0)] "An unknown error occurred when fetching the script.", source:  (0)
+W/BroadcastQueue(  496): Background execution not allowed: receiving Intent { act=android.intent.action.USER_PRESENT flg=0x24200010 } to com.android.chrome/org.chromium.chrome.browser.sharing.click_to_call.ClickToCallMessageHandler$PhoneUnlockedReceiver
+E/ACS.ResponseHandler( 1599): #onFatalError: com.google.android.apps.gsa.shared.speech.b.o: errorCode: 13, engine: 2
+E/ACS.ResponseHandler( 1599): com.google.android.apps.gsa.shared.util.b.e: ACS.ResponseHandler: #onFatalError: com.google.android.apps.gsa.shared.speech.b.o: errorCode: 13, engine: 2
+W/BroadcastQueue(  496): Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:ru.foxhunt.game flg=0x4000010 (has extras) } to com.google.android.packageinstaller/com.android.packageinstaller.PackageInstalledReceiver
+W/BroadcastQueue(  496): Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:ru.foxhunt.game flg=0x4000010 (has extras) } to com.google.android.gms/.games.chimera.GamesSystemBroadcastReceiverProxy
+W/BroadcastQueue(  496): Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:ru.foxhunt.game flg=0x4000010 (has extras) } to com.google.android.gms/.gass.chimera.PackageChangeBroadcastReceiver
+W/BroadcastQueue(  496): Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:ru.foxhunt.game flg=0x4000010 (has extras) } to com.google.android.gms/.chimera.GmsIntentOperationService$PersistentTrustedReceiver
+W/BroadcastQueue(  496): Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:ru.foxhunt.game flg=0x4000010 (has extras) } to com.google.android.googlequicksearchbox/com.google.android.apps.gsa.googlequicksearchbox.GelStubAppWatcher
+W/BroadcastQueue(  496): Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:ru.foxhunt.game flg=0x4000010 (has extras) } to com.google.android.ims/.receivers.RcsAutoStartReceiver
+D/ArtManagerInternalImpl(  496): /data/misc/iorapd/ru.foxhunt.game/108/ru.foxhunt.game.MainActivity/compiled_traces/compiled_trace.pb doesn't exist
+I/ActivityTaskManager(  496): Displayed ru.foxhunt.game/.MainActivity: +940ms
+I/anhw    ( 1149): Scheduling Phenotype for a PhenotypeSyncImmediately(6, org.chromium.net.cronet) one off with window [1, 2] in seconds [CONTEXT service_id=51 ]
+I/iorapd  (  427): Perfetto TraceBuffer saved to file: /data/misc/iorapd/ru.foxhunt.game/108/ru.foxhunt.game.MainActivity/raw_traces/1793788955055464903.perfetto_trace.pb
+I/ActivityManager(  496): Start proc 4599:com.android.chrome/u0a129 for service {com.android.chrome/org.chromium.chrome.browser.customtabs.CustomTabsConnectionService}
+W/.android.chrom( 4599): Long monitor contention with owner CrAsyncTask #2 (4685) at boolean hj.g(java.lang.String)(chromium-TrichromeChromeGoogle.aab-stable-410410686:13) waiters=0 in boolean hj.g(java.lang.String) for 446ms
