@@ -7,7 +7,7 @@
 
 | Поле карточки | Файл |
 |---|---|
-| APK | `https://github.com/Alexsey111/fox-hunt-1990/releases/latest/download/oxota-na-lis.apk` (638 КБ, подписан, sha256 `8d4f40b5…aa1b33`, versionName 1.0.7, minSdk 26) |
+| APK | `https://github.com/Alexsey111/fox-hunt-1990/releases/latest/download/oxota-na-lis.apk` (637,7 КБ, подписан, sha256 `224d48e0…a373c`, versionName 1.0.9, minSdk 26) |
 | Иконка 512×512 | `assets/icons/icon-512.png` |
 | Скриншоты телефона | `ru-store/скриншоты-1.0.9/01-поле.jpg`, `02-настройки.jpg`, `03-мк61.jpg` (1080×1920, сняты с 1.0.9) |
 | Скриншоты планшета | `ru-store/скриншоты-планшет/01-поле.png`, `02-правила.png`, `03-мк61.png` (1600×2560) |
