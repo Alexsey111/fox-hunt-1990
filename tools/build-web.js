@@ -18,6 +18,7 @@ var FILES = [
   'manifest.json',
   'sw.js',
   'assets/styles.css',
+  'assets/mobile-android.css',
   'assets/i18n.js',
   'assets/engine.js',
   'assets/solver.js',

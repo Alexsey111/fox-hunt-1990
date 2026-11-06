@@ -7,12 +7,13 @@
      · в кэш попадает только своё происхождение и только GET.
    ВАЖНО: при выпуске новой версии поднимите CACHE — иначе у тех, кто уже
    открывал игру, останется старый app.js. */
-var CACHE = 'fox-hunt-1.0.8';
+var CACHE = 'fox-hunt-1.0.9';
 
 var SHELL = [
   './index.html',
   './manifest.json',
   './assets/styles.css',
+  './assets/mobile-android.css',
   './assets/i18n.js',
   './assets/engine.js',
   './assets/solver.js',

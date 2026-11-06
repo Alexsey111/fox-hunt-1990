@@ -1,0 +1,406 @@
+/* Добавка к assets/styles.css — компактный интерфейс для Android-оболочки.
+   Файл подключается после основных правил и включается только на html.is-android
+   (класс ставит app.js, если отвечает мост AndroidApp.platform()).
+   Веб-версия и десктоп не меняются: без класса ни одно правило ниже не срабатывает. */
+
+.gear-btn { display: none; }
+.gear-btn svg { width: 20px; height: 20px; display: block; }
+.level-chip { display: none; }
+.hud-bar { display: none; }
+/* обёртка нужна только в оболочке Android: на десктопе она не существует
+   для раскладки, поэтому вкладки и уровни лежат как раньше */
+.controls-row { display: contents; }
+/* ссылка «Оценить в RuStore» существует только в оболочке Android:
+   в вебе и на десктопе карточку показывает обычный пункт подвала */
+.foot-review { display: none; }
+
+/* выдвижная шторка снизу: общий каркас для «Настройки», «Ещё» и «Сложность» */
+.modal.sheet-modal { place-items: end center; padding: 0; }
+.sheet-modal .dock {
+  width: 100%;
+  max-width: 560px;
+  max-height: 88vh;
+  overflow: auto;
+  padding: 8px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+  border-radius: 20px 20px 0 0;
+  border-bottom: 0;
+  animation: dockUp .2s ease-out;
+  overscroll-behavior: contain;
+}
+@keyframes dockUp { from { transform: translateY(14px); opacity: .4; } to { transform: none; opacity: 1; } }
+.dock-grab { width: 40px; height: 4px; margin: 2px auto 10px; border-radius: 2px; background: var(--line-strong); }
+.dock-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.dock-head h2 { margin: 0 0 6px; font-size: 19px; letter-spacing: -.01em; }
+.dock-head .x { position: static; flex: none; width: 36px; height: 36px; }
+.dock-body { padding: 2px 0 4px; }
+
+.set-group { padding: 6px 0 2px; border-top: 1px solid var(--line); }
+.set-group[hidden] { display: none; }
+.set-group:first-child { border-top: 0; padding-top: 0; }
+.set-h {
+  margin: 4px 0 0;
+  font: 650 10.5px/1.2 var(--mono);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.set-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 5px 4px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  color: var(--txt);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+.set-row:active { background: rgba(255, 255, 255, .05); }
+.set-row.is-static { cursor: default; }
+.set-row.is-static:active { background: none; }
+.set-k { display: flex; flex-direction: column; gap: 2px; font-size: 15px; min-width: 0; }
+.set-sub { font-size: 11.5px; color: var(--muted); }
+.set-v { margin-left: auto; font-size: 13px; color: var(--muted); white-space: nowrap; }
+.set-chev { color: var(--dim); font-size: 20px; line-height: 1; }
+.set-stars { color: var(--gold); font-size: 12px; letter-spacing: .06em; flex: none; }
+.set-note { margin: 2px 4px 6px; font-size: 11.5px; line-height: 1.45; color: var(--dim); }
+.set-foot { margin: 14px 2px 0; font-size: 11.5px; color: var(--dim); }
+.set-foot b { color: var(--muted); font-weight: 600; }
+
+.switch {
+  position: relative;
+  flex: none;
+  width: 44px;
+  height: 26px;
+  border-radius: 13px;
+  background: #262d34;
+  transition: background .15s ease;
+}
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #79828b;
+  transition: transform .15s ease, background .15s ease;
+}
+[aria-pressed="true"] > .switch { background: rgba(255, 122, 61, .34); }
+[aria-pressed="true"] > .switch::after { transform: translateX(18px); background: var(--fox); }
+.set-row[disabled] { opacity: .4; pointer-events: none; }
+.set-row[hidden] { display: none; }
+
+.set-seg { display: flex; gap: 3px; padding: 3px; border: 1px solid var(--line); border-radius: 10px; }
+.set-seg-btn {
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--muted);
+  font: 600 12px/1 var(--mono);
+  cursor: pointer;
+}
+.set-seg-btn.is-on { background: var(--panel2); color: var(--txt); box-shadow: inset 0 0 0 1px var(--line); }
+.set-seg-btn:focus-visible { outline: 2px solid var(--sig); outline-offset: 1px; }
+
+.dock-acts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.dock-act {
+  min-height: 50px;
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--txt);
+  font-size: 13.5px;
+  line-height: 1.25;
+  text-align: left;
+  cursor: pointer;
+}
+.dock-act:active { background: var(--panel2); }
+.dock-act.is-primary {
+  grid-column: 1 / -1;
+  border-color: transparent;
+  background: linear-gradient(180deg, #ff8f52, #ef6526);
+  color: #1b0e05;
+  font-weight: 700;
+  text-align: center;
+}
+.dock-act.is-danger { color: #ff9d8f; }
+.dock-act[hidden], .dock-act[disabled] { display: none; }
+
+.lv-list { display: grid; gap: 6px; }
+.lv-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 54px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--txt);
+  text-align: left;
+  cursor: pointer;
+}
+.lv-row.is-on { border-color: rgba(255, 122, 61, .55); box-shadow: inset 0 0 0 1px rgba(255, 122, 61, .18); }
+.lv-row b { display: block; font-size: 14px; font-weight: 650; }
+.lv-row span { display: block; font-size: 11.5px; color: var(--muted); }
+.lv-check { margin-left: auto; color: var(--fox); font-weight: 700; }
+
+.win-review {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 12px 0 0;
+  padding: 11px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .03);
+  color: var(--txt);
+  font-size: 13px;
+  text-decoration: none;
+}
+.win-review:active { background: rgba(255, 255, 255, .06); }
+.win-review-stars { color: var(--gold); font-size: 11px; letter-spacing: .06em; }
+.win-review[hidden] { display: none; }
+
+.hud-badge {
+  display: inline-block;
+  min-width: 18px;
+  margin-left: 3px;
+  padding: 1px 5px;
+  border-radius: 8px;
+  background: var(--panel2);
+  color: var(--fox);
+  font: 700 10px/1.4 var(--mono);
+}
+.hud-badge:empty { display: none; }
+
+/* =====================================================================
+   Телефоны и планшеты в Android-оболочке
+   ===================================================================== */
+
+@media (max-width: 1024px) {
+  html.is-android .top {
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  html.is-android .brand { gap: 10px; }
+  html.is-android .brand-mark { width: 32px; height: 32px; }
+  html.is-android .brand-text h1 { font-size: 17px; line-height: 1.15; }
+  html.is-android .sub { display: none; }
+  html.is-android .top-actions { width: auto; margin-left: auto; flex-wrap: nowrap; gap: 6px; }
+  html.is-android .top-actions > *:not(.gear-btn) { display: none; }
+  html.is-android .gear-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 12px;
+    color: var(--muted);
+  }
+  html.is-android .gear-btn:active { color: var(--txt); background: var(--panel2); }
+
+  html.is-android .levels { display: none; }
+  /* Вариант и сложность — одна строка управления: на телефоне в столбик,
+     на планшете рядом, чтобы не растягивать вкладки на всю ширину. */
+  html.is-android .controls-row { display: flex; align-items: stretch; gap: 8px; margin-bottom: 8px; }
+  html.is-android .controls-row .variants { flex: 1 1 auto; margin: 0; gap: 6px; min-width: 0; }
+  html.is-android .level-chip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: auto;
+    min-height: 44px;
+    margin: 0;
+    padding: 5px 12px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--panel);
+    color: var(--txt);
+    text-align: left;
+    cursor: pointer;
+  }
+  html.is-android .level-chip:active { background: var(--panel2); }
+  html.is-android .level-chip .lc-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  html.is-android .level-chip b { font-size: 14px; font-weight: 650; line-height: 1.2; }
+  html.is-android .level-chip .lc-meta { font-size: 11px; color: var(--muted); }
+  html.is-android .level-chip .lc-chev { width: 18px; height: 18px; margin-left: auto; color: var(--dim); flex: none; }
+  html.is-android .level-chip[hidden] { display: none; }
+
+  html.is-android .variants { margin-bottom: 0; gap: 6px; }
+  html.is-android .variant-btn { flex: 1 1 0; padding: 8px 6px; font-size: .76rem; border-radius: 9px; }
+
+  html.is-android .board-wrap { padding: 8px; border-radius: 14px; }
+  html.is-android .board-hint { display: none; }
+  html.is-android .board-wrap.is-calc .calc-hint { display: none; }
+
+  html.is-android .panel { max-width: none; margin: 8px 0 0; }
+  html.is-android .panel.is-calc { margin-top: 6px; }
+
+  /* индикатор ответа — сразу под полем, в одну строку с числом */
+  html.is-android .lcd {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      "label value"
+      "note  note";
+    align-items: center;
+    column-gap: 12px;
+    row-gap: 4px;
+    padding: 10px 14px 11px;
+    border-radius: 12px;
+  }
+  html.is-android .lcd-label { grid-area: label; margin: 0; }
+  html.is-android .lcd-value { grid-area: value; font-size: 34px; line-height: 1; text-align: left; }
+  html.is-android .lcd-note { grid-area: note; margin: 0; font-size: 11.5px; }
+
+  html.is-android .hud-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; }
+  html.is-android .hud-bar[hidden] { display: none; }
+  html.is-android .hud-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    min-height: 54px;
+    padding: 6px 2px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--panel);
+    color: var(--muted);
+    font-size: 10.5px;
+    line-height: 1.15;
+    cursor: pointer;
+  }
+  html.is-android .hud-btn:active { background: var(--panel2); color: var(--txt); }
+  html.is-android .hud-btn svg { width: 19px; height: 19px; }
+  html.is-android .hud-btn[disabled] { opacity: .38; }
+
+  html.is-android .coord,
+  html.is-android .tools,
+  html.is-android .legend,
+  html.is-android .hint-line { display: none !important; }
+
+  /* журнал: свёрнут, открывается кнопкой «Журнал» */
+  html.is-android .log-block { margin-top: 10px; }
+  html.is-android .log-head { cursor: pointer; min-height: 34px; }
+  html.is-android .log-block .log { max-height: 0; overflow: hidden; transition: max-height .2s ease; }
+  html.is-android .log-block.is-open .log { max-height: 40vh; overflow: auto; }
+  html.is-android .stats { display: none; }
+  html.is-android .panel-note#stat-line,
+  html.is-android #btn-daily,
+  html.is-android #btn-daily-hist,
+  html.is-android #btn-stats,
+  html.is-android #daily-line,
+  html.is-android .actions { display: none; }
+  html.is-android .panel-note { font-size: 11px; margin: 6px 0 0; }
+
+  html.is-android .foot { margin-top: 10px; padding-top: 6px; font-size: 11.5px; gap: 0 14px; }
+  html.is-android .foot > span,
+  html.is-android .foot > .foot-dim,
+  html.is-android #foot-win,
+  html.is-android #foot-donate,
+  html.is-android #foot-rustore,
+  html.is-android .foot a[href*="github.com"],
+  html.is-android .foot .foot-btn[data-print-blank] { display: none; }
+  /* ссылки подвала — полноценные цели нажатия, а не строка мелкого текста */
+  html.is-android .foot .foot-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 2px;
+    color: var(--muted);
+    font-size: 11.5px;
+  }
+  html.is-android .foot-review { display: inline-flex; }
+}
+
+/* планшет в портрете: поле слева, панель справа — без пустых полос */
+@media (min-width: 601px) and (max-width: 1024px) {
+  html.is-android .layout {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 16px;
+    align-items: start;
+  }
+  html.is-android .board-wrap { max-width: none; margin: 0; padding: 10px; }
+  html.is-android .panel { max-width: none; margin: 0; }
+  html.is-android .controls-row { display: flex; flex-direction: row; }
+  html.is-android .level-chip { flex: 0 0 42%; max-width: 360px; }
+  html.is-android .stats {
+    display: grid;
+    margin: 8px 0 0;
+    grid-template-columns: 1fr 1fr;
+  }
+  html.is-android .stats .v { font-size: 15px; }
+  html.is-android .log-block .log { max-height: 26vh; overflow: auto; }
+  html.is-android .log-block.is-open .log { max-height: 40vh; }
+  html.is-android .hud-bar { grid-template-columns: repeat(4, 1fr); }
+  html.is-android .hud-btn { font-size: 10px; }
+}
+
+/* телефон: всё, что нужно в партии, помещается на один экран */
+@media (max-width: 600px) {
+  html.is-android .app { padding: 8px 10px 14px; }
+  html.is-android .board { grid-template-columns: 1.05rem repeat(var(--n, 10), minmax(0, 1fr)); gap: 2px; }
+  html.is-android .cell { border-radius: 6px; }
+  html.is-android .axis { font-size: 9px; }
+  html.is-android .board-echo { margin-bottom: 4px; }
+  html.is-android .lcd-value { font-size: 30px; }
+  html.is-android .hud-btn { min-height: 52px; }
+  html.is-android .foot { justify-content: flex-start; }
+  html.is-android .controls-row { flex-direction: column; }
+  html.is-android .level-chip { width: 100%; max-width: none; }
+  /* журнал на телефоне — по кнопке: свёрнутый заголовок дублировал бы её */
+  html.is-android .log-block { display: none; }
+  html.is-android .log-block.is-open { display: block; }
+}
+
+@media (max-width: 380px) {
+  html.is-android .app { padding: 6px 7px 12px; }
+  html.is-android .board-wrap { padding: 6px; }
+  html.is-android .board { grid-template-columns: .95rem repeat(var(--n, 10), minmax(0, 1fr)); gap: 1px; }
+  html.is-android .variant-btn { padding: 7px 4px; font-size: .7rem; }
+  html.is-android .hud-btn { font-size: 9.5px; min-height: 50px; }
+  html.is-android .lcd-value { font-size: 27px; }
+}
+
+/* низкий экран (360×640, 1080×1920 при DPR 3): поле, ответ и инструменты
+   обязаны помещаться целиком, иначе ответ снова уезжает за прокрутку */
+@media (max-width: 1024px) and (max-height: 700px) {
+  html.is-android .app { padding: 4px 8px 8px; }
+  html.is-android .top { margin-bottom: 4px; }
+  html.is-android .brand-mark { width: 28px; height: 28px; }
+  html.is-android .brand-text h1 { font-size: 15.5px; }
+  html.is-android .gear-btn { width: 40px; height: 40px; }
+  html.is-android .controls-row { margin-bottom: 5px; }
+  html.is-android .variant-btn { padding: 6px 4px; font-size: .72rem; }
+  html.is-android .level-chip { min-height: 34px; padding: 2px 10px; margin-bottom: 5px; }
+  html.is-android .level-chip .lc-meta { display: none; }
+  html.is-android .board-wrap { padding: 4px; }
+  html.is-android .board-echo { font-size: 11px; margin-bottom: 3px; }
+  html.is-android .lcd { padding: 6px 12px 5px; row-gap: 2px; }
+  html.is-android .lcd-value { font-size: 26px; }
+  html.is-android .lcd-note { display: none; }
+  html.is-android .hud-bar { margin-top: 3px; }
+  html.is-android .hud-btn { min-height: 44px; font-size: 10px; }
+  html.is-android .hud-btn svg { width: 17px; height: 17px; }
+  html.is-android .foot { margin-top: 6px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet-modal .dock { animation: none; }
+}

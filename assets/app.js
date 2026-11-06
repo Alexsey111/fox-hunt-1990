@@ -10,6 +10,13 @@
   var STORE_KEY = 'fox1990.v2';
   var OLD_KEY = 'fox1990.v1';
 
+  /* Внутри APK есть мост AndroidApp (MainActivity.Bridge). По нему включается
+     компактный интерфейс из assets/mobile-android.css: браузер и десктоп
+     видят прежнюю страницу, потому что класса is-android у них нет. */
+  var ANDROID_SHELL = (window.AndroidApp && typeof window.AndroidApp.platform === 'function')
+    ? String(window.AndroidApp.platform()) : '';
+  if (ANDROID_SHELL === 'android') document.documentElement.classList.add('is-android');
+
   /* Внешние адреса — в одном месте: подвал и правила «Где взять» берут их отсюда.
      Пустая строка означает «такого адреса пока нет» — пункт просто не показывается,
      битых ссылок в интерфейсе не бывает. */
@@ -276,6 +283,14 @@
 
   function pad2(n) { return n < 10 ? '0' + n : String(n); }
 
+  /* Подсказка под индикатором до первого хода: в браузере координаты вводят
+     с клавиатуры, в Android-оболочке поля ввода нет — там пеленг даёт тап. */
+  function firstHint(mode) {
+    var android = document.documentElement.classList.contains('is-android');
+    if (android) return T(mode === 'binary' ? 'lcd.first.hint.tap.binary' : 'lcd.first.hint.tap');
+    return T(mode === 'binary' ? 'lcd.first.hint.binary' : 'lcd.first.hint');
+  }
+
   function movesWord(n) { return I18N.num(n, 'unit.move'); }
 
   function foxWord(n) { return I18N.num(n, 'unit.fox'); }
@@ -390,7 +405,7 @@
     } else if (state.level && state.level.calc) {
       calcReset();
     } else if (state.level) {
-      setLCD('—', T(state.level.mode === 'binary' ? 'lcd.first.hint.binary' : 'lcd.first.hint'));
+      setLCD('—', firstHint(state.level.mode));
     }
 
     var lv = state.level;
@@ -420,6 +435,7 @@
     if (!shareModal.hidden) shareDuel();
     if (!winModal.hidden && state.lastWin) showWin(state.lastWin.record, state.lastWin.stars);
 
+    syncAndroidUI();
     toast(T('toast.lang'));
   }
 
@@ -499,6 +515,7 @@
       btns[i].classList.toggle('is-on', on);
       btns[i].setAttribute('aria-pressed', on ? 'true' : 'false');
     }
+    syncAndroidUI();
   }
 
   function setLevel(id, seed) {
@@ -562,6 +579,7 @@
       hint.innerHTML = T('hint.default') +
         (lv.marks ? ' <span class="hint-extra">' + T('hint.default.marks') + '</span>' : '');
     }
+    syncAndroidUI();
   }
 
   /* «Сколько» — от одной лисы до всего состава: список строится по числу лис,
@@ -1541,6 +1559,19 @@
 
   /* ---------- панель ---------- */
 
+  /* Строка над полем: последний ответ и счёт партии. На телефоне она заменяет
+     панель статистики, поэтому время тоже здесь. */
+  function paintEcho() {
+    if (!boardEcho) return;
+    var g = state.game;
+    if (!g) return;
+    var cells = state.lastKey ? state.lastKey.split(':').slice(0, 2).join('.') : '';
+    boardEcho.textContent = (cells ? cells + ' → ' + lcdValue.textContent + ' · ' : '') +
+      T('echo.stats', {
+        found: g.foundTotal, total: g.totalFoxes, moves: movesShown(), time: fmtTime(state.elapsed)
+      });
+  }
+
   function setLCD(value, note, isFox) {
     lcdValue.textContent = value;
     lcdNote.innerHTML = note;
@@ -1548,10 +1579,7 @@
     /* на телефоне панель пеленга уезжает под доску: короткая строка над полем
        показывает ответ там, где палец только что нажал */
     if (boardEcho) {
-      var g = state.game;
-      var cells = state.lastKey ? state.lastKey.split(':').slice(0, 2).join('.') : '';
-      boardEcho.textContent = (cells ? cells + ' → ' + value + ' · ' : '') +
-        T('echo.stats', { found: g.foundTotal, total: g.totalFoxes, moves: movesShown() });
+      paintEcho();
       boardEcho.classList.toggle('is-fox', !!isFox);
     }
   }
@@ -1564,6 +1592,8 @@
     statMoves.textContent = String(movesShown());
     statSeed.textContent = String(g.seed).padStart(6, '0');
     statTime.textContent = fmtTime(state.elapsed);
+    paintEcho();
+    syncAndroidUI();
   }
 
   /* ---------- честная партия: помощь и повтор вне рекорда ---------- */
@@ -2338,7 +2368,7 @@
       }
       if (state.level && state.level.calc) calcRender(last);
     } else {
-      setLCD('—', T(state.level && state.level.mode === 'binary' ? 'lcd.first.hint.binary' : 'lcd.first.hint'));
+      setLCD('—', firstHint(state.level && state.level.mode));
       if (state.level && state.level.calc) calcReset();
     }
 
@@ -2396,7 +2426,7 @@
       /* продолжаем партию: числа, журнал и индикатор берём из журнала ходов */
       syncFromLog();
     } else {
-      setLCD('—', T(lv.mode === 'binary' ? 'lcd.first.hint.binary' : 'lcd.first.hint'));
+      setLCD('—', firstHint(lv.mode));
       if (lv.calc) calcReset();
     }
 
@@ -2967,6 +2997,8 @@
       return;
     }
     if (e.key === 'Escape') {
+      var openedSheet = document.querySelector('.sheet-modal:not([hidden])');
+      if (openedSheet) { closeModal(openedSheet); return; }
       if (!shareModal.hidden) { closeModal(shareModal); return; }
       if (!dailyModal.hidden) { closeModal(dailyModal); return; }
       if (!statsModal.hidden) { closeModal(statsModal); return; }
@@ -2980,6 +3012,228 @@
       showHint();
     }
   });
+
+  /* ---------- компактный интерфейс Android ----------
+     Шестерня, шторки «Настройки» и «Ещё», сложность одной строкой, панель
+     инструментов под полем. Настоящие органы игры остаются прежними: новое
+     только нажимает их (data-proxy), поэтому состояние не двоится и десктоп
+     продолжает работать как раньше. */
+
+  var androidUI = document.documentElement.classList.contains('is-android');
+  var settingsSheet = el('settings-sheet');
+  var moreSheet = el('more-sheet');
+  var levelSheet = el('level-sheet');
+  var levelSheetList = el('level-sheet-list');
+  var levelChip = el('level-chip');
+  var hudBar = el('hud-bar');
+  var hudLog = el('hud-log');
+  var logBlock = document.querySelector('.log-block');
+
+  function openSheet(sheet) {
+    if (!sheet) return;
+    syncAndroidUI();
+    openModal(sheet, sheet.querySelector('.dock-x'));
+  }
+
+  function closeSheets() {
+    [settingsSheet, moreSheet, levelSheet].forEach(function (s) {
+      if (s && !s.hidden) closeModal(s);
+    });
+  }
+
+  function setPressed(id, on) {
+    var b = el(id);
+    if (b) b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  }
+
+  function syncOption(rowId, box) {
+    var b = el(rowId);
+    if (!b || !box) return;
+    b.setAttribute('aria-pressed', box.checked ? 'true' : 'false');
+    b.disabled = !!box.disabled;
+  }
+
+  /* Одна точка правды: состояние шторок читается у настоящих кнопок и чекбоксов. */
+  function syncAndroidUI() {
+    if (!androidUI) return;
+
+    /* кнопка «Отменить» включает и выключает себя по числу заходов;
+       панель читает её состояние — значит, состояние должно быть свежим */
+    updateUndoBtn();
+
+    var lv = state.level;
+    var chipTitle = el('level-chip-title');
+    var chipMeta = el('level-chip-meta');
+    if (lv && chipTitle && chipMeta) {
+      chipTitle.textContent = levelTitle(lv);
+      chipMeta.textContent = lv.size + ' × ' + lv.size + ' · ' + foxWord(lv.foxes);
+    }
+    if (levelChip) levelChip.hidden = state.variant !== 'classic';
+
+    var levelRow = el('set-level-row');
+    var levelVal = el('set-level-val');
+    if (levelVal && lv) levelVal.textContent = levelTitle(lv) + ' · ' + lv.size + ' × ' + lv.size;
+    if (levelRow) levelRow.hidden = state.variant !== 'classic';
+    var levelGroup = el('set-game-group');
+    if (levelGroup) levelGroup.hidden = state.variant !== 'classic';
+
+    setPressed('set-sound', btnSound.getAttribute('aria-pressed') === 'true');
+
+    var theme = document.documentElement.dataset.theme || 'modern';
+    document.querySelectorAll('.set-seg-btn').forEach(function (b) {
+      var on = b.dataset.setTheme === theme;
+      b.classList.toggle('is-on', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+
+    var langVal = el('set-lang-val');
+    if (langVal) langVal.textContent = T(I18N.lang() === 'ru' ? 'set.lang.ru' : 'set.lang.en');
+
+    syncOption('set-lines', optLines);
+    syncOption('set-notes', optNotes);
+    syncOption('set-auto', optAuto);
+
+    var hudCount = el('hud-log-count');
+    if (hudCount) hudCount.textContent = logCount.textContent;
+
+    if (hudBar) {
+      var hintProxy = hudBar.querySelector('[data-proxy="btn-hint"]');
+      if (hintProxy) hintProxy.disabled = el('btn-hint').disabled;
+      var undoProxy = hudBar.querySelector('[data-proxy="btn-undo"]');
+      if (undoProxy) undoProxy.disabled = btnUndo.disabled;
+    }
+
+    if (moreSheet) {
+      moreSheet.querySelectorAll('[data-proxy]').forEach(function (b) {
+        var real = el(b.dataset.proxy);
+        var off = !real || real.hidden || real.disabled;
+        b.hidden = off;
+        b.disabled = off;
+      });
+    }
+
+    if (levelSheetList) {
+      levelSheetList.querySelectorAll('.lv-row').forEach(function (b) {
+        var on = !!(lv && b.dataset.level === lv.id);
+        b.classList.toggle('is-on', on);
+        b.setAttribute('aria-current', on ? 'true' : 'false');
+        var mark = b.querySelector('.lv-check');
+        if (mark) mark.textContent = on ? '✓' : '';
+      });
+    }
+  }
+
+  function buildLevelSheet() {
+    if (!levelSheetList) return;
+    levelSheetList.innerHTML = '';
+    E.LEVELS.forEach(function (lv) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'lv-row';
+      b.dataset.level = lv.id;
+
+      var text = document.createElement('span');
+      var title = document.createElement('b');
+      title.textContent = levelTitle(lv);
+      var meta = document.createElement('span');
+      meta.textContent = lv.size + ' × ' + lv.size + ' · ' + foxWord(lv.foxes) + ' · ' + levelNote(lv);
+      text.appendChild(title);
+      text.appendChild(meta);
+
+      var mark = document.createElement('span');
+      mark.className = 'lv-check';
+      mark.setAttribute('aria-hidden', 'true');
+
+      b.appendChild(text);
+      b.appendChild(mark);
+      b.addEventListener('click', function () {
+        closeSheets();
+        var real = levelBar.querySelector('.lv-btn[data-level="' + lv.id + '"]');
+        if (real) real.click();
+        syncAndroidUI();
+      });
+      levelSheetList.appendChild(b);
+    });
+  }
+
+  if (androidUI) {
+    if (hudBar) hudBar.hidden = false;
+    buildLevelSheet();
+
+    el('btn-settings').addEventListener('click', function () { openSheet(settingsSheet); });
+    el('hud-more').addEventListener('click', function () { openSheet(moreSheet); });
+
+    /* Прокси: строка шторки нажимает настоящую кнопку и шторку закрывает. */
+    document.addEventListener('click', function (e) {
+      var p = e.target.closest ? e.target.closest('[data-proxy]') : null;
+      if (!p) return;
+      var target = el(p.dataset.proxy);
+      if (!target || target.disabled || target.hidden) return;
+      e.preventDefault();
+      closeSheets();
+      target.click();
+      syncAndroidUI();
+    });
+
+    el('set-sound').addEventListener('click', function () {
+      btnSound.click();
+      syncAndroidUI();
+    });
+
+    document.querySelectorAll('.set-seg-btn').forEach(function (b) {
+      b.addEventListener('click', function () {
+        setTheme(b.dataset.setTheme);
+        syncAndroidUI();
+      });
+    });
+
+    el('set-lang').addEventListener('click', function () {
+      setLang(I18N.lang() === 'ru' ? 'en' : 'ru');
+      syncAndroidUI();
+    });
+
+    [['set-lines', optLines], ['set-notes', optNotes], ['set-auto', optAuto]].forEach(function (pair) {
+      el(pair[0]).addEventListener('click', function () {
+        if (pair[1].disabled) return;
+        pair[1].click();
+        syncAndroidUI();
+      });
+      pair[1].addEventListener('change', syncAndroidUI);
+    });
+
+    levelChip.addEventListener('click', function () { openSheet(levelSheet); });
+    el('set-level-row').addEventListener('click', function () {
+      closeSheets();
+      openSheet(levelSheet);
+    });
+
+    function toggleLog(force) {
+      if (!logBlock) return;
+      var open = (typeof force === 'boolean') ? force : !logBlock.classList.contains('is-open');
+      logBlock.classList.toggle('is-open', open);
+      if (hudLog) hudLog.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open) logBlock.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+    if (hudLog) hudLog.addEventListener('click', function () { toggleLog(); });
+    var logHead = logBlock ? logBlock.querySelector('.log-head') : null;
+    if (logHead) {
+      logHead.setAttribute('role', 'button');
+      logHead.tabIndex = 0;
+      logHead.addEventListener('click', function () {
+        if (window.matchMedia('(max-width: 1024px)').matches) toggleLog();
+      });
+    }
+
+    if (!prefs.marksHintSeen) {
+      prefs.marksHintSeen = true;
+      savePrefs();
+      window.setTimeout(function () { toast(T('toast.marks.hint')); }, 1400);
+    }
+
+    var verEl = el('set-version');
+    var verMeta = document.querySelector('meta[name="app-version"]');
+    if (verEl && verMeta) verEl.textContent = verMeta.getAttribute('content');
+  }
 
   /* ---------- старт ---------- */
 
@@ -3011,6 +3265,7 @@
   setTheme(prefs.theme || 'modern');
   btnSound.setAttribute('aria-pressed', prefs.sound ? 'true' : 'false');
   markLevelBar();
+  syncAndroidUI();
 
   var startSeed = seedFromHash();
   /* Ссылку из адреса уважаем, но номер, который игра дописала сама,

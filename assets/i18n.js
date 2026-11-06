@@ -235,6 +235,33 @@
   add('btn.again', 'Ещё партия', 'Another game');
   add('btn.same', 'Повторить эту', 'Replay this one');
   add('btn.winLook', 'Посмотреть поле', 'View the board');
+  add('win.review', 'Оцените игру в RuStore', 'Rate the game in RuStore');
+
+  /* ---------- компактный интерфейс Android ---------- */
+
+  add('btn.settings.title', 'Настройки', 'Settings');
+  add('hud.log', 'Журнал', 'Log');
+  add('more.title', 'Ещё', 'More');
+  add('set.title', 'Настройки', 'Settings');
+  add('set.game', 'Игра', 'Game');
+  add('set.level', 'Сложность', 'Difficulty');
+  add('set.feel', 'Звук и вид', 'Sound & look');
+  add('set.theme', 'Оформление', 'Theme');
+  add('set.lang', 'Язык', 'Language');
+  add('set.lang.ru', 'Русский', 'Russian');
+  add('set.lang.en', 'English', 'English');
+  add('set.helpers', 'Помощники', 'Helpers');
+  add('set.helpers.note',
+    'Автопометки, подсказка и отмена хода выводят партию из рекордов.',
+    'Auto-marks, hints and undo take the game out of the records.');
+  add('set.about', 'Правила и отзывы', 'Rules & feedback');
+  add('set.review', 'Оценить игру и оставить отзыв', 'Rate the game and leave a review');
+  add('set.review.sub', 'Откроется карточка игры в RuStore', 'Opens the game page in RuStore');
+  add('set.version', 'Версия', 'Version');
+  add('lcd.first.hint.tap', 'нажмите клетку — это пеленг', 'tap a cell to take a bearing');
+  add('lcd.first.hint.tap.binary', 'радар: нажмите клетку', 'radar: tap a cell');
+  add('toast.marks.hint', 'Долгое нажатие на клетку ставит заметку «?» или «×»',
+    'Long-press a cell to add a “?” or “×” mark');
 
   /* ---------- разбор ---------- */
 
@@ -586,7 +613,7 @@
   add('calc.answer.fox', 'ЛИС {left}', 'FOX {left}');
   add('calc.note.fox', 'поймана одна · осталось {left} из {total}',
     'one caught · {left} of {total} left');
-  add('calc.note.move', 'ход {moves} · лис на четырёх лучах', 'move {moves} · foxes on the four rays');
+  add('calc.note.move', 'ход {moves} · на четырёх лучах', 'move {moves} · on the four rays');
   add('calc.note.bad', 'нужно два числа от 1 до {size}, например 4.3',
     'two numbers from 1 to {size} are needed, e.g. 4.3');
   add('coord.bad.size', 'координаты — два числа от 1 до {size}, например 4.3',
@@ -709,6 +736,9 @@
   add('foot.repo.title', 'Открыть репозиторий на GitHub', 'Open the repository on GitHub');
   add('foot.rustore', 'Приложение в RuStore', 'App in RuStore');
   add('foot.rustore.title', 'Открыть приложение в RuStore', 'Open the app in RuStore');
+  add('foot.review', 'Оценить в RuStore', 'Rate in RuStore');
+  add('foot.review.title', 'Открыть карточку игры в RuStore, чтобы поставить оценку',
+    'Open the game page in RuStore to rate it');
   add('foot.win', 'Скачать для Windows', 'Download for Windows');
   add('foot.win.title', 'Установщик для Windows с GitHub', 'Windows installer from GitHub');
   add('foot.donate', 'Поддержать проект', 'Support the project');
@@ -716,8 +746,8 @@
   add('foot.blank', 'Бланк для печати', 'Printable sheet');
   add('foot.blank.title', 'Распечатать пустое поле, чтобы отмечать на бумаге',
     'Print an empty board to mark on paper');
-  add('echo.stats', 'найдено {found}/{total} · ходы {moves}',
-    'found {found}/{total} · moves {moves}');
+  add('echo.stats', 'найдено {found}/{total} · ходы {moves} · {time}',
+    'found {found}/{total} · moves {moves} · {time}');
 
   add('rules.h.where', 'Где взять и как поддержать', 'Where to get it and how to support it');
   add('rules.w1',
@@ -730,6 +760,9 @@
   add('rules.w2a',
     'Для Android приложение лежит в RuStore: <a class="foot-link" data-rustore target="_blank" rel="noopener">открыть в RuStore</a>. Ничего покупать и подключать не нужно.',
     'For Android the app is on RuStore: <a class="foot-link" data-rustore target="_blank" rel="noopener">open in RuStore</a>. Nothing to buy or subscribe to.');
+  add('rules.w2b',
+    'Оценка и отзыв пишутся на той же карточке RuStore — там же, где кнопка «Установить»: <a class="foot-link" data-rustore target="_blank" rel="noopener">поставить оценку</a>. Это помогает игре подняться в каталоге.',
+    'Ratings and reviews live on the same RuStore page as the Install button: <a class="foot-link" data-rustore target="_blank" rel="noopener">rate the game</a>. It helps the game rank in the catalogue.');
   add('rules.w3',
     'Рекламы в игре нет и не будет. Поддержать проект можно добровольно: <a class="foot-link" data-donate target="_blank" rel="noopener">перевести любую сумму</a>.',
     'There is no advertising in the game and there will be none. You can support the project voluntarily: <a class="foot-link" data-donate target="_blank" rel="noopener">send any amount</a>.');
