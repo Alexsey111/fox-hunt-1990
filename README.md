@@ -16,6 +16,10 @@
 - Сборка для хостинга вручную: папка `dist-web/` (`npm run web`), см. раздел
   «Веб-версия и установка на телефон (PWA)».
 - Windows: установщик и portable — https://github.com/Alexsey111/fox-hunt-1990/releases
+  Ссылка из игры ведёт на `…/releases/latest/download/oxota-na-lis-setup.exe`, поэтому в
+  каждом релизе обязаны лежать файлы с постоянными именами (`oxota-na-lis-setup.exe`,
+  `oxota-na-lis-portable.exe`). CI по тегу создаёт релиз только с APK — Windows-сборку
+  (`npm run dist`) прикладывают к нему вручную, иначе кнопка «Скачать для Windows» отдаёт 404.
 - Android: APK там же, в последнем релизе (`oxota-na-lis-<версия>.apk`); в RuStore —
   https://www.rustore.ru/catalog/app/ru.foxhunt.game (материалы карточки — в `ru-store/`).
 - Политика конфиденциальности: https://alexsey111.github.io/fox-hunt-1990/privacy.html
